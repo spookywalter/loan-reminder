@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Loan Reminder</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+--gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      background: var(--gray-50);
+    }
+
+    .admin-container {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      min-height: 100vh;
+    }
+
+    .admin-sidebar {
+background: linear-gradient(180deg, #1e293b, #0f172a);
+color: white;
+      padding: 2rem 0;
+    }
+
+    .sidebar-header h2 {
+      padding: 0 0 2rem 2rem;
+font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+padding: 0;
+      margin: 0;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 2rem;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: rgba(255,255,255,0.1);
+color: white;
+    }
+
+    .admin-main {
+      padding: 2rem;
+    }
+
+    .admin-main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .admin-main-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .header-actions {
+      display: flex;
+gap: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #059669;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--gray-600);
+      border: 1px solid var(--gray-100);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-100);
+    }
+
+    .admin-stats-grid {
+display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: var(--gray-600);
+      font-weight: 500;
+    }
+
+    .admin-content {
+      display: grid;
+grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .recent-users, .recent-payments {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+
+    .table-container {
+       overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+padding: 1rem;
+      text-align: left;
+    }
+
+    th {
+      font-weight: 600;
+      color: var(--gray-600);
+    }
+
+    .status-badge {
+padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status-badge.active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .payment-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .payment-card {
+      background: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .payment-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .payment-amount {
+      font-size: 1.25rem;
+font-weight: 700;
+      color: var(--primary);
+    }
+
+    @media (max-width: 1024px) {
+      .admin-container {
+        grid-template-columns: 1fr;
+      }
+      
+.admin-content {
+       grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .admin-main {
+        padding: 1rem;
+      }
+      
+      .admin-main-header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .admin-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <h2>Admin Panel</h2>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 1.41 8.71 8.71V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27 Asc -3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1 Asc .62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2 Asc .67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83- Asc 3.12 3.16z"/>
+          </svg>
+          <span>Users</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+c0-1.1-.9-2-2zm Asc -5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+          </svg>
+          <span>Loans</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1. Asc 9 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6v2l8 5 8-5V6l-8 5z"/>
+          </svg>
+          <span>Payments</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10 Asc -4.48 10-10S17.52 2 12 2z"/>
+            <circle cx="12" cy="12" r="10"/>
+          </svg>
+          <span>Stats</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-main-header">
+        <h1>Admin Dashboard</h1>
+<div class="header-actions">
+          <button class="btn btn-primary" onclick="exportData()">Export Report</button>
+<button class="btn btn-secondary" onclick="logout()">Logout</button>
+        </div>
+      </header>
+
+      <div class="admin-stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="totalUsers">-</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+<div class="stat-card">
+<div class="stat-number" id="totalLoans">-</div>
+          <div class="stat-label">All Loans</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="totalPayments">-</div>
+          <div class="stat-label">Payments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="revenue">KSh 0</div>
+          <div class="stat-label">Total Revenue</div>
+        </div>
+      </div>
+
+<div class="admin-content">
+        <section class="recent-users">
+          <h2>Recent Users</h2>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Joined</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recentUsers">
+                <tr>
+                  <td>John Doe</td>
+                  <td>john@example.com</td>
+                  <td>2024-01-15</td>
+                  <td><span class="status-badge active">Active</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="recent-payments">
+          <h2>Recent Payments</h2>
+          <div class="payment-grid">
+            <div class="payment-card">
+              <div class="payment-header">
+                <h3>Safaricom M-Pesa</h3>
+                <span class="payment-amount">KSh 5,000</span>
+              </div>
+              <div class="payment-details">
+                <p>John Doe - Personal Loan</p>
+                <p>2024-01-20 14:30</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = 'login.html';
+    }
+
+    async function loadAdminData() {
+      // Demo data
+      document.getElementById('totalUsers').textContent = '247';
+document.getElementById('totalLoans').textContent = '89';
+      document.getElementById('totalPayments').textContent = '156';
+      document.getElementById('revenue').textContent = 'KSh 2,450,000';
+    }
+
+    function renderUsers(users) {
+      const tbody = document.getElementById('recentUsers');
+      tbody.innerHTML = `
+        <tr>
+          <td>John Doe</td>
+          <td>john@example.com</td>
+          <td>2024-01-15</td>
+          <td><span class="status-badge active">Active</span></td>
+        </tr>
+      `;
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    }
+
+    function exportData() {
+      alert('Export feature coming soon!');
+    }
+
+    loadAdminData();
+  </script>
+</body>
+</html>
+

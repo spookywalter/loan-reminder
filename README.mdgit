@@ -1,0 +1,1 @@
+"# loan-reminder"  initgit add README.mdgit commit -m "first commit"git branch -M maingit remote add origin https://github.com/spookywalter/loan-reminder.gitgit push -u origin main
