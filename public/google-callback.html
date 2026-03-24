@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loan Reminder - Google Sign In</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 20px;
+    }
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid var(--primary-green);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-container">
+    <div class="loading-spinner"></div>
+    <h2>Completing Google Sign In...</h2>
+    <p>Please wait while we verify your account.</p>
+  </div>
+
+  <script src="app-config.js"></script>
+  <script>
+    // Get authorization code from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    const error = urlParams.get('error');
+
+    if (error) {
+      alert('Google Sign In was cancelled or failed.');
+      window.location.href = 'loan application.html';
+    } else if (code) {
+      // Send code to backend
+      fetch(`${window.API_BASE_URL}/auth/google/callback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          window.location.href = 'Untitled-1.html';
+        } else {
+          alert(data.message || 'Google Sign In failed. Please try again.');
+          window.location.href = 'loan application.html';
+        }
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        alert('An error occurred during Google Sign In. Please try again.');
+        window.location.href = 'loan application.html';
+      });
+    } else {
+      // No code, redirect to login
+      window.location.href = 'loan application.html';
+    }
+  </script>
+</body>
+</html>
+

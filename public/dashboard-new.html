@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Loan Reminder</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #34d399;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --white: #ffffff;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --border-color: #e5e7eb;
+    }
+
+    [data-theme="dark"] {
+      --gray-50: #1a1a2e;
+      --gray-100: #16213e;
+      --gray-200: #1f2937;
+      --gray-300: #374151;
+      --gray-600: #9ca3af;
+      --gray-700: #d1d5db;
+      --gray-800: #e5e7eb;
+      --gray-900: #f9fafb;
+      --white: #0f172a;
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --border-color: #374151;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .dashboard-container {
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .dashboard-header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: var(--white);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .header-top {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .dashboard-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .subtitle {
+      max-width: 1200px;
+      margin: 0.5rem auto 0;
+      opacity: 0.95;
+      font-size: 0.9375rem;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .theme-toggle {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 0.625rem 1rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--white);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .theme-toggle svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropbtn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 0.625rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      color: var(--white);
+      transition: all 0.2s;
+    }
+
+    .dropbtn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .dropbtn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: var(--white);
+      min-width: 200px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      z-index: 100;
+      margin-top: 0.5rem;
+      overflow: hidden;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .dropdown-content a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1.25rem;
+      color: var(--gray-700);
+      text-decoration: none;
+      transition: all 0.2s;
+      font-size: 0.9375rem;
+    }
+
+    .dropdown-content a:hover {
+      background: var(--gray-50);
+      color: var(--primary);
+    }
+
+    .dropdown-content a.logout-link {
+      color: var(--danger);
+      border-top: 1px solid var(--gray-100);
+    }
+
+    .dropdown-content a.logout-link:hover {
+      background: #fee2e2;
+    }
+
+    /* Main Content */
+    .dashboard-main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem 2rem;
+    }
+
+    .welcome-section {
+      background: var(--bg-secondary);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+      border: 1px solid var(--border-color);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .welcome-section h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .welcome-section p {
+      color: var(--gray-600);
+      font-size: 0.9375rem;
+    }
+
+    /* Stats Grid */
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-secondary);
+      padding: 1.5rem;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      transition: all 0.2s, background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--gray-900);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: var(--gray-600);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    /* Features Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .feature-card {
+      background: var(--bg-secondary);
+      padding: 2rem 1.5rem;
+      border-radius: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s, background 0.3s ease, border-color 0.3s ease;
+      border: 2px solid transparent;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--primary);
+    }
+
+    .feature-card .icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      font-size: 1.75rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .feature-card h3 {
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--gray-800);
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+    }
+
+    /* Logout Button */
+    .logout-btn {
+      display: block;
+      width: 200px;
+      margin: 0 auto;
+      padding: 1rem;
+      background: var(--danger);
+      color: var(--white);
+      text-align: center;
+      text-decoration: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9375rem;
+    }
+
+    .logout-btn:hover {
+      background: #dc2626;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      transition: background 0.3s ease;
+    }
+
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--gray-800);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--gray-600);
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius);
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: var(--gray-100);
+      color: var(--gray-800);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--gray-800);
+      font-size: 0.9375rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgb(16 185 129 / 0.1);
+    }
+
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .btn {
+      padding: 0.875rem 1.5rem;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tab {
+      padding: 0.75rem 1.25rem;
+      border: none;
+      background: var(--gray-100);
+      cursor: pointer;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--gray-600);
+      transition: all 0.2s;
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    .tab:hover:not(.active) {
+      background: var(--gray-200);
+    }
+
+    /* Query Items */
+    .query-item {
+      background: var(--gray-50);
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--primary);
+    }
+
+    .query-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .query-item-header strong {
+      color: var(--gray-800);
+      font-size: 0.9375rem;
+    }
+
+    .query-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .status-open {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-resolved {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-in_progress {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .query-meta {
+      font-size: 0.8125rem;
+      color: var(--gray-600);
+      margin-bottom: 0.5rem;
+    }
+
+    .admin-response {
+      background: #dcfce7;
+      padding: 1rem;
+      border-radius: var(--radius);
+      margin-top: 0.75rem;
+      border-left: 3px solid var(--success);
+    }
+
+    .admin-response strong {
+      color: var(--gray-800);
+      font-size: 0.875rem;
+    }
+
+    .admin-response p {
+      color: var(--gray-700);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--gray-600);
+    }
+
+    .empty-state svg {
+      fill: var(--gray-300);
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-header {
+        padding: 1.5rem 1rem;
+      }
+
+      .header-top {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .header-right {
+        justify-content: center;
+      }
+
+      .dashboard-main {
+        padding: 0 1rem 1rem;
+      }
+
+      .quick-stats,
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+      <div class="header-top">
+        <div>
+          <h1>💰 Loan Reminder</h1>
+          <p class="subtitle">Manage Your Loans Efficiently</p>
+        </div>
+        <div class="header-right">
+          <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+            <svg id="moonIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+            <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+            <span id="themeText">Dark</span>
+          </button>
+          <div class="dropdown">
+            <button class="dropbtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="1"/>
+                <circle cx="12" cy="5" r="1"/>
+                <circle cx="12" cy="19" r="1"/>
+              </svg>
+            </button>
+            <div class="dropdown-content">
+              <a href="view-loans.html">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                View Loans
+              </a>
+              <a href="add-loan.html">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="16"/>
+                  <line x1="8" y1="12" x2="16" y2="12"/>
+                </svg>
+                Add Loan
+              </a>
+              <a href="payment-history.html">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                  <line x1="1" y1="10" x2="23" y2="10"/>
+                </svg>
+                Payment History
+              </a>
+              <a href="login.html" class="logout-link">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Logout
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="dashboard-main">
+      <div class="welcome-section">
+        <h2>Welcome back! 👋</h2>
+        <p>Track your loans, manage payments, and stay on top of your finances.</p>
+      </div>
+
+      <div class="quick-stats">
+        <div class="stat-card">
+          <span class="stat-value" id="totalBalance" style="color: var(--primary);">KSh 0</span>
+          <span class="stat-label">Total Balance</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="activeLoans">0</span>
+          <span class="stat-label">Active Loans</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="pendingPayments" style="color: var(--danger);">0</span>
+          <span class="stat-label">Overdue Loans</span>
+        </div>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card" onclick="window.location.href='view-loans.html'">
+          <div class="icon">📋</div>
+          <h3>View Loans</h3>
+          <p>Check your current loans</p>
+        </div>
+        <div class="feature-card" onclick="window.location.href='add-loan.html'">
+          <div class="icon">➕</div>
+          <h3>Add Loan</h3>
+          <p>Add new loans</p>
+        </div>
+        <div class="feature-card" onclick="window.location.href='quick-pay.html'">
+          <div class="icon">⚡</div>
+          <h3>Quick Pay</h3>
+          <p>Pay loans instantly</p>
+        </div>
+        <div class="feature-card" onclick="window.location.href='payment-history.html'">
+          <div class="icon">💳</div>
+          <h3>Payments</h3>
+          <p>View payment history</p>
+        </div>
+        <div class="feature-card" onclick="openSupportModal()">
+          <div class="icon">💬</div>
+          <h3>Support</h3>
+          <p>Submit queries</p>
+        </div>
+      </div>
+
+      <button class="logout-btn" onclick="logout()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Logout
+      </button>
+    </main>
+  </div>
+
+  <!-- Quick Pay Modal -->
+  <div id="quickPayModal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <div class="modal-header">
+        <h3>⚡ Quick Pay</h3>
+        <button class="modal-close" onclick="closeQuickPayModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="quickPayLoading" class="loading-state" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+          <p>🔄 Loading your loans...</p>
+        </div>
+
+        <div id="quickPayNoLoans" class="empty-state" style="display: none;">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" style="fill: var(--gray-300); margin-bottom: 1rem;">
+            <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6v2l8 5 8-5V6l-8 5z"/>
+          </svg>
+          <h3>No Active Loans</h3>
+          <p>You don't have any active loans to pay.</p>
+          <button onclick="window.location.href='add-loan.html'" class="btn btn-primary" style="margin-top: 1rem;">Add Your First Loan</button>
+        </div>
+
+        <div id="quickPayContent" style="display: none;">
+          <div class="form-group">
+            <label>Select Loan to Pay</label>
+            <select id="loanSelect" onchange="selectLoanForPayment()" style="width: 100%; padding: 0.875rem; border: 2px solid var(--border-color); border-radius: var(--radius); font-size: 0.9375rem; background: var(--bg-primary); color: var(--text-primary);">
+              <option value="">-- Choose a loan --</option>
+            </select>
+          </div>
+
+          <div id="loanDetails" style="display: none; background: var(--gray-50); padding: 1.25rem; border-radius: var(--radius); margin-bottom: 1.5rem; border-left: 4px solid var(--primary);">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div>
+                <div style="font-size: 0.8125rem; color: var(--text-secondary);">Loan Name</div>
+                <div style="font-weight: 600;" id="detailLoanName">-</div>
+              </div>
+              <div>
+                <div style="font-size: 0.8125rem; color: var(--text-secondary);">Bank</div>
+                <div style="font-weight: 600;" id="detailBankName">-</div>
+              </div>
+              <div>
+                <div style="font-size: 0.8125rem; color: var(--text-secondary);">Remaining Balance</div>
+                <div style="font-weight: 700; color: var(--primary);" id="detailBalance">-</div>
+              </div>
+              <div>
+                <div style="font-size: 0.8125rem; color: var(--text-secondary);">Due Date</div>
+                <div style="font-weight: 600;" id="detailDueDate">-</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Payment Amount (KSh)</label>
+            <input type="number" id="paymentAmount" placeholder="Enter amount" min="1" step="0.01" style="width: 100%; padding: 0.875rem; border: 2px solid var(--border-color); border-radius: var(--radius); font-size: 1rem;">
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+            <button type="button" class="btn btn-secondary" onclick="setAmount('min')" style="flex: 1;">Min</button>
+            <button type="button" class="btn btn-secondary" onclick="setAmount('partial')" style="flex: 1;">25%</button>
+            <button type="button" class="btn btn-secondary" onclick="setAmount('half')" style="flex: 1;">50%</button>
+            <button type="button" class="btn btn-primary" onclick="setAmount('full')" style="flex: 1;">Full</button>
+          </div>
+
+          <div class="form-group">
+            <label>Payment Method</label>
+            <select id="paymentMethod" onchange="togglePaymentDetails()" style="width: 100%; padding: 0.875rem; border: 2px solid var(--border-color); border-radius: var(--radius); font-size: 0.9375rem; background: var(--bg-primary); color: var(--text-primary);">
+              <option value="">-- Select Payment Method --</option>
+              <option value="mpesa">M-Pesa (Mobile Money)</option>
+              <option value="bank_transfer">Bank Transfer</option>
+              <option value="credit_card">Credit Card</option>
+              <option value="debit_card">Debit Card</option>
+              <option value="paypal">PayPal</option>
+              <option value="cash">Cash Payment</option>
+              <option value="standing_order">Standing Order</option>
+              <option value="ussd">USSD Banking</option>
+            </select>
+          </div>
+
+          <!-- M-Pesa Details -->
+          <div id="mpesaDetails" class="payment-details" style="display: none; background: #dcfce7; padding: 1.25rem; border-radius: var(--radius); margin-bottom: 1.5rem; border-left: 4px solid var(--success);">
+            <h4 style="margin-bottom: 0.75rem; color: #166534;">📱 M-Pesa Payment</h4>
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label style="color: #166534;">M-Pesa Phone Number</label>
+              <input type="tel" id="mpesaPhone" placeholder="e.g., 254712345678" style="width: 100%; padding: 0.75rem; border: 2px solid #86efac; border-radius: var(--radius);">
+            </div>
+            <p style="color: #166534; font-size: 0.875rem;">You will receive an STK push prompt on your phone to complete the payment.</p>
+          </div>
+
+          <!-- Card Details -->
+          <div id="cardDetails" class="payment-details" style="display: none; background: var(--gray-50); padding: 1.25rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
+            <h4 style="margin-bottom: 0.75rem;">💳 Card Payment</h4>
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label>Card Number</label>
+              <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: var(--radius);">
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>Expiry Date</label>
+                <input type="text" placeholder="MM/YY" maxlength="5" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: var(--radius);">
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label>CVV</label>
+                <input type="text" placeholder="123" maxlength="4" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: var(--radius);">
+              </div>
+            </div>
+          </div>
+
+          <!-- PayPal Details -->
+          <div id="paypalDetails" class="payment-details" style="display: none; background: var(--gray-50); padding: 1.25rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
+            <h4 style="margin-bottom: 0.75rem;">🅿️ PayPal Payment</h4>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>PayPal Email</label>
+              <input type="email" placeholder="your@email.com" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: var(--radius);">
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 0.75rem;">You will be redirected to PayPal to complete the payment.</p>
+          </div>
+
+          <!-- Bank Transfer Details -->
+          <div id="bankTransferDetails" class="payment-details" style="display: none; background: var(--gray-50); padding: 1.25rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
+            <h4 style="margin-bottom: 0.75rem;">🏦 Bank Transfer</h4>
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label>Account Number</label>
+              <input type="text" placeholder="Enter account number" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: var(--radius);">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>Bank Name</label>
+              <input type="text" placeholder="Enter bank name" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: var(--radius);">
+            </div>
+          </div>
+
+          <div id="paymentMessage" style="margin-bottom: 1rem;"></div>
+
+          <button type="button" onclick="submitPayment()" class="btn btn-primary" style="width: 100%; padding: 1rem; font-size: 1rem; font-weight: 600;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 0.5rem;">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Confirm Payment
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Support Modal -->
+  <div id="supportModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>💬 Support Center</h3>
+        <button class="modal-close" onclick="closeSupportModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="tabs">
+          <button class="tab active" id="supportTabNew" onclick="showSupportTab('new')">Submit Query</button>
+          <button class="tab" id="supportTabMy" onclick="showSupportTab('my')">My Queries</button>
+        </div>
+
+        <div id="supportNewTab">
+          <form id="supportQueryForm">
+            <div class="form-group">
+              <label>Category</label>
+              <select id="supportCategory" required>
+                <option value="">Select category</option>
+                <option value="loan_issue">Loan Issue</option>
+                <option value="payment_issue">Payment Issue</option>
+                <option value="bank_related">Bank Related</option>
+                <option value="account_issue">Account Issue</option>
+                <option value="general">General</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Subject</label>
+              <input type="text" id="supportSubject" required placeholder="Brief description">
+            </div>
+            <div class="form-group">
+              <label>Message</label>
+              <textarea id="supportMessage" required placeholder="Describe your issue..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Priority</label>
+              <select id="supportPriority">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+                <option value="urgent">Urgent</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width:100%">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+              Submit Query
+            </button>
+          </form>
+        </div>
+
+        <div id="supportMyTab" style="display:none;">
+          <div id="supportQueriesList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app-config.js"></script>
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    // Theme Toggle
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const moonIcon = document.getElementById('moonIcon');
+      const sunIcon = document.getElementById('sunIcon');
+      const themeText = document.getElementById('themeText');
+
+      if (currentTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+        moonIcon.style.display = 'block';
+        sunIcon.style.display = 'none';
+        themeText.textContent = 'Dark';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        moonIcon.style.display = 'none';
+        sunIcon.style.display = 'block';
+        themeText.textContent = 'Light';
+      }
+    }
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.getElementById('moonIcon').style.display = 'none';
+      document.getElementById('sunIcon').style.display = 'block';
+      document.getElementById('themeText').textContent = 'Light';
+    }
+
+    function formatCurrency(amount) {
+      return 'KSh ' + new Intl.NumberFormat('en-US').format(amount);
+    }
+
+    async function fetchDashboardData() {
+      try {
+        const response = await fetch('http://localhost:5000/loans', {
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+        });
+        const data = await response.json();
+        if (response.ok) {
+          const loans = data.loans;
+          const totalBalance = loans.reduce((sum, loan) => sum + (loan.remainingBalance || loan.loanAmount), 0);
+          const activeLoans = loans.filter(loan => loan.status === 'active').length;
+          const overdueLoans = loans.filter(loan => loan.status === 'overdue').length;
+          document.getElementById('totalBalance').textContent = formatCurrency(totalBalance);
+          document.getElementById('activeLoans').textContent = activeLoans;
+          document.getElementById('pendingPayments').textContent = overdueLoans;
+        }
+      } catch (err) {
+        console.error('Error loading dashboard data:', err);
+      }
+    }
+    fetchDashboardData();
+
+    // Support Modal
+    const supportModal = document.getElementById('supportModal');
+
+    function openSupportModal() {
+      supportModal.style.display = 'flex';
+      showSupportTab('new');
+    }
+
+    function closeSupportModal() {
+      supportModal.style.display = 'none';
+    }
+
+    function showSupportTab(tab) {
+      if (tab === 'new') {
+        document.getElementById('supportTabNew').classList.add('active');
+        document.getElementById('supportTabMy').classList.remove('active');
+        document.getElementById('supportNewTab').style.display = 'block';
+        document.getElementById('supportMyTab').style.display = 'none';
+      } else {
+        document.getElementById('supportTabNew').classList.remove('active');
+        document.getElementById('supportTabMy').classList.add('active');
+        document.getElementById('supportNewTab').style.display = 'none';
+        document.getElementById('supportMyTab').style.display = 'block';
+        loadMyQueries();
+      }
+    }
+
+    document.getElementById('supportQueryForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const category = document.getElementById('supportCategory').value;
+      const subject = document.getElementById('supportSubject').value;
+      const message = document.getElementById('supportMessage').value;
+      const priority = document.getElementById('supportPriority').value;
+
+      try {
+        const response = await fetch('http://localhost:5000/queries', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ category, subject, message, priority })
+        });
+        const data = await response.json();
+        if (response.ok) {
+          alert('Query submitted successfully!');
+          document.getElementById('supportQueryForm').reset();
+          showSupportTab('my');
+        } else {
+          alert(data.error || 'Failed to submit query');
+        }
+      } catch (err) {
+        alert('Error submitting query');
+      }
+    });
+
+    async function loadMyQueries() {
+      try {
+        const response = await fetch('http://localhost:5000/queries', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        const container = document.getElementById('supportQueriesList');
+        if (!data.queries || data.queries.length === 0) {
+          container.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg><p>No queries yet</p></div>';
+          return;
+        }
+        container.innerHTML = data.queries.map(q => `
+          <div class="query-item">
+            <div class="query-item-header">
+              <strong>${q.subject}</strong>
+              <span class="query-status status-${q.status}">${q.status.replace('_', ' ')}</span>
+            </div>
+            <div class="query-meta">${q.category.replace('_', ' ')} • ${new Date(q.createdAt).toLocaleDateString()}</div>
+            <p>${q.message}</p>
+            ${q.adminResponse ? `<div class="admin-response"><strong>Admin Response:</strong><p>${q.adminResponse.message}</p></div>` : ''}
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Quick Pay Modal Functions
+    let selectedLoanId = null;
+    let selectedLoanBalance = 0;
+    let userLoans = [];
+
+    function openQuickPayModal() {
+      document.getElementById('quickPayModal').style.display = 'flex';
+      document.getElementById('quickPayLoading').style.display = 'block';
+      document.getElementById('quickPayNoLoans').style.display = 'none';
+      document.getElementById('quickPayContent').style.display = 'none';
+      document.getElementById('paymentMessage').innerHTML = '';
+      document.getElementById('paymentAmount').value = '';
+      document.getElementById('paymentMethod').value = '';
+      selectedLoanId = null;
+      selectedLoanBalance = 0;
+      
+      loadUserLoans();
+    }
+
+    function closeQuickPayModal() {
+      document.getElementById('quickPayModal').style.display = 'none';
+    }
+
+    async function loadUserLoans() {
+      try {
+        const response = await fetch('http://localhost:5000/loans', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        
+        if (response.ok && data.loans) {
+          userLoans = data.loans.filter(l => l.status === 'active' && l.remainingBalance > 0);
+          
+          if (userLoans.length === 0) {
+            document.getElementById('quickPayLoading').style.display = 'none';
+            document.getElementById('quickPayNoLoans').style.display = 'block';
+            return;
+          }
+          
+          const select = document.getElementById('loanSelect');
+          select.innerHTML = '<option value="">-- Choose a loan --</option>' + 
+            userLoans.map(loan => 
+              `<option value="${loan._id}" data-balance="${loan.remainingBalance}">${loan.loanName} - KSh ${loan.remainingBalance.toLocaleString()}</option>`
+            ).join('');
+          
+          document.getElementById('quickPayLoading').style.display = 'none';
+          document.getElementById('quickPayContent').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error loading loans:', error);
+        document.getElementById('quickPayLoading').innerHTML = '<p style="color: var(--danger);">❌ Failed to load loans</p>';
+      }
+    }
+
+    function selectLoanForPayment() {
+      const select = document.getElementById('loanSelect');
+      const option = select.options[select.selectedIndex];
+      
+      if (!option.value) {
+        document.getElementById('loanDetails').style.display = 'none';
+        selectedLoanId = null;
+        return;
+      }
+      
+      const loan = userLoans.find(l => l._id === option.value);
+      if (!loan) return;
+      
+      selectedLoanId = loan._id;
+      selectedLoanBalance = loan.remainingBalance;
+      
+      document.getElementById('detailLoanName').textContent = loan.loanName;
+      document.getElementById('detailBankName').textContent = loan.bankName;
+      document.getElementById('detailBalance').textContent = 'KSh ' + loan.remainingBalance.toLocaleString();
+      document.getElementById('detailDueDate').textContent = new Date(loan.dueDate).toLocaleDateString();
+      document.getElementById('loanDetails').style.display = 'block';
+    }
+
+    function setAmount(type) {
+      if (!selectedLoanBalance) {
+        alert('Please select a loan first');
+        return;
+      }
+      
+      let amount = 0;
+      switch(type) {
+        case 'min': amount = Math.min(selectedLoanBalance * 0.1, 1000); break;
+        case 'partial': amount = selectedLoanBalance * 0.25; break;
+        case 'half': amount = selectedLoanBalance * 0.5; break;
+        case 'full': amount = selectedLoanBalance; break;
+      }
+      
+      document.getElementById('paymentAmount').value = Math.round(amount);
+    }
+
+    function togglePaymentDetails() {
+      const method = document.getElementById('paymentMethod').value;
+      
+      // Hide all payment details
+      document.getElementById('mpesaDetails').style.display = 'none';
+      document.getElementById('cardDetails').style.display = 'none';
+      document.getElementById('paypalDetails').style.display = 'none';
+      document.getElementById('bankTransferDetails').style.display = 'none';
+      
+      // Show relevant details
+      if (method === 'mpesa') {
+        document.getElementById('mpesaDetails').style.display = 'block';
+      } else if (method === 'credit_card' || method === 'debit_card') {
+        document.getElementById('cardDetails').style.display = 'block';
+      } else if (method === 'paypal') {
+        document.getElementById('paypalDetails').style.display = 'block';
+      } else if (method === 'bank_transfer') {
+        document.getElementById('bankTransferDetails').style.display = 'block';
+      }
+    }
+
+    async function submitPayment() {
+      const messageEl = document.getElementById('paymentMessage');
+      
+      if (!selectedLoanId) {
+        messageEl.innerHTML = '<p style="color: var(--danger);">❌ Please select a loan</p>';
+        return;
+      }
+      
+      const amount = parseFloat(document.getElementById('paymentAmount').value);
+      if (!amount || amount <= 0) {
+        messageEl.innerHTML = '<p style="color: var(--danger);">❌ Please enter a valid amount</p>';
+        return;
+      }
+      
+      if (amount > selectedLoanBalance) {
+        messageEl.innerHTML = '<p style="color: var(--danger);">❌ Amount exceeds remaining balance</p>';
+        return;
+      }
+      
+      const method = document.getElementById('paymentMethod').value;
+      if (!method) {
+        messageEl.innerHTML = '<p style="color: var(--danger);">❌ Please select a payment method</p>';
+        return;
+      }
+      
+      messageEl.innerHTML = '<p style="color: var(--warning);">⏳ Processing payment...</p>';
+      
+      try {
+        const response = await fetch('http://localhost:5000/payments', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            loanId: selectedLoanId,
+            amount: amount,
+            paymentMethod: method
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          messageEl.innerHTML = `
+            <div style="background: #dcfce7; color: #166534; padding: 1rem; border-radius: var(--radius);">
+              <strong>✅ Payment Successful!</strong><br>
+              Amount: KSh ${amount.toLocaleString()}<br>
+              Method: ${method.toUpperCase()}
+            </div>
+          `;
+          
+          setTimeout(() => {
+            closeQuickPayModal();
+            alert(`Payment Successful!\n\nAmount: KSh ${amount.toLocaleString()}\nMethod: ${method.toUpperCase()}\n\nYour loan balance has been updated.`);
+            window.location.reload(); // Reload to show updated stats
+          }, 2000);
+        } else {
+          messageEl.innerHTML = `<p style="color: var(--danger);">❌ ${data.error || 'Payment failed'}</p>`;
+        }
+      } catch (error) {
+        console.error('Payment error:', error);
+        messageEl.innerHTML = '<p style="color: var(--danger);">❌ Network error. Please try again.</p>';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    }
+
+    window.onclick = function(event) {
+      const quickPayModal = document.getElementById('quickPayModal');
+      const supportModal = document.getElementById('supportModal');
+      if (event.target === quickPayModal) closeQuickPayModal();
+      if (event.target === supportModal) closeSupportModal();
+    }
+  </script>
+</body>
+</html>
+

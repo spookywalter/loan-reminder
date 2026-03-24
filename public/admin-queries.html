@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support Queries - Admin Dashboard</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #34d399;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --white: #ffffff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --info: #3b82f6;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --border-color: #e5e7eb;
+    }
+
+    [data-theme="dark"] {
+      --gray-50: #1a1a2e;
+      --gray-100: #16213e;
+      --gray-200: #1f2937;
+      --gray-300: #374151;
+      --gray-600: #9ca3af;
+      --gray-700: #d1d5db;
+      --gray-800: #e5e7eb;
+      --gray-900: #f9fafb;
+      --white: #0f172a;
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --border-color: #374151;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .page-container {
+      min-height: 100vh;
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 1.5rem 2rem;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .header-content h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .main-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-secondary);
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 800;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .queries-container {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 1.5rem;
+      height: calc(100vh - 280px);
+      min-height: 600px;
+    }
+
+    .queries-list {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .queries-list-header {
+      padding: 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .queries-list-header h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .filter-select {
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+
+    .queries-list-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0.75rem;
+    }
+
+    .query-item {
+      padding: 1rem;
+      border-radius: var(--radius);
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+      background: var(--gray-50);
+    }
+
+    .query-item:hover {
+      background: var(--white);
+      border-color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .query-item.active {
+      background: var(--white);
+      border-color: var(--primary);
+      box-shadow: var(--shadow);
+    }
+
+    .query-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+
+    .query-item-title {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.9375rem;
+    }
+
+    .query-badge {
+      padding: 0.25rem 0.625rem;
+      border-radius: 9999px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-open {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-in_progress {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge-resolved {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .query-item-meta {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+    }
+
+    .query-detail {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .query-detail-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .query-detail-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .query-detail-meta {
+      display: flex;
+      gap: 1.5rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .query-detail-body {
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .query-message {
+      background: var(--gray-50);
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+      border-left: 4px solid var(--primary);
+    }
+
+    .query-message-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .query-message-content {
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    .admin-response-section {
+      margin-top: 1.5rem;
+    }
+
+    .admin-response-section h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .response-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .response-textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 1rem;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 0.9375rem;
+      font-family: inherit;
+      resize: vertical;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    .response-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgb(16 185 129 / 0.1);
+    }
+
+    .response-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .existing-response {
+      background: #dcfce7;
+      padding: 1.25rem;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--success);
+    }
+
+    .existing-response-label {
+      font-size: 0.75rem;
+      color: #166534;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .existing-response-content {
+      color: #166534;
+      line-height: 1.6;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-secondary);
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .empty-state svg {
+      fill: var(--gray-300);
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 1024px) {
+      .queries-container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+
+      .queries-list {
+        max-height: 400px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <header class="page-header">
+      <div class="header-content">
+        <h1>
+          💬 Support Queries
+        </h1>
+        <div class="header-actions">
+          <a href="admin-dashboard.html" class="btn btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Dashboard
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-value" id="totalQueries" style="color: var(--info);">0</span>
+          <span class="stat-label">Total Queries</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="openQueries" style="color: var(--warning);">0</span>
+          <span class="stat-label">Open</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="inProgressQueries" style="color: var(--info);">0</span>
+          <span class="stat-label">In Progress</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="resolvedQueries" style="color: var(--success);">0</span>
+          <span class="stat-label">Resolved</span>
+        </div>
+      </div>
+
+      <div class="queries-container">
+        <div class="queries-list">
+          <div class="queries-list-header">
+            <h2>All Queries</h2>
+            <select class="filter-select" id="statusFilter" onchange="filterQueries()">
+              <option value="all">All Status</option>
+              <option value="open">Open</option>
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+            </select>
+          </div>
+          <div class="queries-list-content" id="queriesList">
+            <div class="empty-state">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+              </svg>
+              <p>Loading queries...</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="query-detail" id="queryDetail">
+          <div class="empty-state">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 9h-2V5h-2v6H7l5 5 5-5h-2z"/>
+            </svg>
+            <h3>Select a Query</h3>
+            <p>Click on a query from the list to view details and respond</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app-config.js"></script>
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = 'login.html';
+    } else {
+      // Verify admin access
+      try {
+        const decoded = JSON.parse(atob(token.split('.')[1]));
+        if (!decoded.isAdmin) {
+          alert('Admin access required!');
+          window.location.href = 'dashboard-new.html';
+        } else {
+          // Initialize the page
+          loadQueries();
+        }
+      } catch (e) {
+        window.location.href = 'login.html';
+      }
+    }
+
+    let allQueries = [];
+    let selectedQueryId = null;
+
+    async function loadQueries() {
+      try {
+        const response = await fetch('http://localhost:5000/queries', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        
+        if (response.ok && data.queries) {
+          allQueries = data.queries;
+          renderQueriesList();
+          updateStats();
+        }
+      } catch (error) {
+        console.error('Error loading queries:', error);
+        document.getElementById('queriesList').innerHTML = `
+          <div class="empty-state">
+            <h3>❌ Failed to load queries</h3>
+            <p>Please check your connection and try again</p>
+            <button onclick="loadQueries()" class="btn btn-primary" style="margin-top: 1rem;">Retry</button>
+          </div>
+        `;
+      }
+    }
+
+    function filterQueries() {
+      renderQueriesList();
+    }
+
+    function renderQueriesList() {
+      const container = document.getElementById('queriesList');
+      const filter = document.getElementById('statusFilter').value;
+      
+      const filtered = filter === 'all' 
+        ? allQueries 
+        : allQueries.filter(q => q.status === filter);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <p>No queries found</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(query => {
+        const date = new Date(query.createdAt).toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        const badgeClass = {
+          'open': 'badge-open',
+          'in_progress': 'badge-in_progress',
+          'resolved': 'badge-resolved'
+        }[query.status];
+
+        const isActive = selectedQueryId === query._id ? 'active' : '';
+
+        return `
+          <div class="query-item ${isActive}" onclick="selectQuery('${query._id}')">
+            <div class="query-item-header">
+              <span class="query-item-title">${query.subject}</span>
+              <span class="query-badge ${badgeClass}">${query.status.replace('_', ' ')}</span>
+            </div>
+            <div class="query-item-meta">
+              <strong>${query.category.replace('_', ' ')}</strong> • ${date}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectQuery(queryId) {
+      selectedQueryId = queryId;
+      const query = allQueries.find(q => q._id === queryId);
+      
+      if (!query) return;
+
+      renderQueriesList(); // Update active state
+      renderQueryDetail(query);
+    }
+
+    function renderQueryDetail(query) {
+      const container = document.getElementById('queryDetail');
+      const date = new Date(query.createdAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      const hasResponse = query.adminResponse && query.adminResponse.message;
+
+      container.innerHTML = `
+        <div class="query-detail-header">
+          <h2 class="query-detail-title">${query.subject}</h2>
+          <div class="query-detail-meta">
+            <span>👤 ${query.userId?.username || 'Unknown User'}</span>
+            <span>📧 ${query.userId?.email || 'No email'}</span>
+            <span>📅 ${date}</span>
+            <span>🏷️ ${query.priority.toUpperCase()} Priority</span>
+          </div>
+        </div>
+        <div class="query-detail-body">
+          <div class="query-message">
+            <div class="query-message-label">User's Message</div>
+            <div class="query-message-content">
+              ${query.message}
+            </div>
+          </div>
+
+          ${hasResponse ? `
+            <div class="existing-response">
+              <div class="existing-response-label">
+                ✓ Admin Response - ${new Date(query.adminResponse.respondedAt).toLocaleString()}
+              </div>
+              <div class="existing-response-content">
+                ${query.adminResponse.message}
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="admin-response-section">
+            <h3>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+              Respond to Query
+            </h3>
+            <div class="response-form">
+              <textarea 
+                class="response-textarea" 
+                id="responseText" 
+                placeholder="Type your response here... Be helpful and professional."
+              ></textarea>
+              <div class="response-actions">
+                <button onclick="sendResponse()" class="btn btn-primary">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                  </svg>
+                  Send Response
+                </button>
+                <button onclick="markAsResolved()" class="btn btn-success">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Mark as Resolved
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function sendResponse() {
+      const responseText = document.getElementById('responseText').value.trim();
+      
+      if (!responseText) {
+        alert('Please enter a response');
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:5000/admin/queries/${selectedQueryId}`, {
+          method: 'PUT',
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            message: responseText,
+            status: 'in_progress'
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('✅ Response sent successfully!');
+          document.getElementById('responseText').value = '';
+          loadQueries(); // Reload to get updated query
+          selectQuery(selectedQueryId); // Re-select to show response
+        } else {
+          alert('Failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error sending response:', error);
+        alert('Network error. Please try again.');
+      }
+    }
+
+    async function markAsResolved() {
+      const responseText = document.getElementById('responseText').value.trim();
+      
+      if (!responseText) {
+        alert('Please enter a final response before marking as resolved');
+        return;
+      }
+
+      try {
+        const response = await fetch(`http://localhost:5000/admin/queries/${selectedQueryId}`, {
+          method: 'PUT',
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            message: responseText,
+            status: 'resolved'
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('✅ Query marked as resolved!');
+          document.getElementById('responseText').value = '';
+          loadQueries();
+          selectQuery(selectedQueryId);
+        } else {
+          alert('Failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error marking as resolved:', error);
+        alert('Network error. Please try again.');
+      }
+    }
+
+    function updateStats() {
+      const total = allQueries.length;
+      const open = allQueries.filter(q => q.status === 'open').length;
+      const inProgress = allQueries.filter(q => q.status === 'in_progress').length;
+      const resolved = allQueries.filter(q => q.status === 'resolved').length;
+
+      document.getElementById('totalQueries').textContent = total;
+      document.getElementById('openQueries').textContent = open;
+      document.getElementById('inProgressQueries').textContent = inProgress;
+      document.getElementById('resolvedQueries').textContent = resolved;
+    }
+
+    // Load queries on page load
+    loadQueries();
+  </script>
+</body>
+</html>
+

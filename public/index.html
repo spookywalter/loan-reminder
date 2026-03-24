@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loan Reminder - Manage Your Loans</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #34d399;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --white: #ffffff;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+      min-height: 100vh;
+      color: var(--gray-800);
+    }
+
+    .landing-container {
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .landing-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 3rem;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+    }
+
+    .landing-header h1 {
+      color: var(--white);
+      font-size: 1.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-login {
+      background: transparent;
+      border: 2px solid var(--white);
+      color: var(--white);
+    }
+
+    .btn-login:hover {
+      background: var(--white);
+      color: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-signup {
+      background: var(--primary);
+      border: 2px solid var(--primary);
+      color: var(--white);
+    }
+
+    .btn-signup:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    /* Hero Section */
+    .hero-section {
+      padding: 5rem 2rem;
+      text-align: center;
+      color: var(--white);
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero-section h2 {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.25rem, 3vw, 1.5rem);
+      font-weight: 500;
+      color: var(--primary-light);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-description {
+      font-size: 1.125rem;
+      line-height: 1.8;
+      opacity: 0.95;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-large {
+      padding: 1rem 2.5rem;
+      font-size: 1.0625rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--white);
+      border: 2px solid var(--primary);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--white);
+      color: var(--white);
+    }
+
+    .btn-outline:hover {
+      background: var(--white);
+      color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .user-count {
+      margin-top: 2.5rem;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      font-size: 0.9375rem;
+      color: var(--white);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      backdrop-filter: blur(10px);
+    }
+
+    /* Features Section */
+    .features-section {
+      padding: 5rem 2rem;
+      background: var(--white);
+    }
+
+    .features-section h3 {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gray-800);
+      margin-bottom: 3rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      padding: 2rem;
+      border: 2px solid var(--gray-100);
+      border-radius: 16px;
+      text-align: center;
+      transition: all 0.3s;
+      background: var(--white);
+    }
+
+    .feature-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .feature-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2.5rem;
+      box-shadow: var(--shadow);
+    }
+
+    .feature-card h4 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--gray-800);
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-card p {
+      color: var(--gray-600);
+      line-height: 1.6;
+    }
+
+    /* About Section */
+    .about-section {
+      padding: 5rem 2rem;
+      background: var(--gray-50);
+      text-align: center;
+    }
+
+    .about-section h3 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gray-800);
+      margin-bottom: 1.5rem;
+    }
+
+    .about-section p {
+      color: var(--gray-600);
+      font-size: 1.125rem;
+      line-height: 1.8;
+      max-width: 800px;
+      margin: 0 auto 1rem;
+    }
+
+    /* Footer */
+    .landing-footer {
+      padding: 2rem;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.3);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .landing-footer p {
+      margin-bottom: 0.5rem;
+      font-size: 0.9375rem;
+    }
+
+    .business-email {
+      font-size: 0.875rem;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+      .landing-header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+      }
+
+      .header-right {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .hero-section {
+        padding: 3rem 1rem;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn-large {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+      }
+
+      .features-section,
+      .about-section {
+        padding: 3rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="landing-container">
+    <!-- Header -->
+    <header class="landing-header">
+      <div class="header-left">
+        <h1>
+          💰 Loan Reminder
+        </h1>
+      </div>
+      <div class="header-right">
+        <a href="login.html" class="btn btn-login">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Login
+        </a>
+        <a href="sign-up.html" class="btn btn-signup">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="8.5" cy="7" r="4"/>
+            <line x1="20" y1="8" x2="20" y2="14"/>
+            <line x1="23" y1="11" x2="17" y2="11"/>
+          </svg>
+          Sign Up
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <div class="hero-image" style="margin-bottom: 1.5rem;">
+          <svg width="120" height="120" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="100" cy="100" r="90" fill="rgba(16, 185, 129, 0.2)"/>
+            <circle cx="100" cy="100" r="70" fill="rgba(16, 185, 129, 0.3)"/>
+            <text x="100" y="115" text-anchor="middle" font-size="80" fill="#10b981">💰</text>
+          </svg>
+        </div>
+        <h2>Manage Your Loans Efficiently</h2>
+        <p class="hero-subtitle">Never miss a payment again</p>
+        <p class="hero-description">
+          Loan Reminder helps you track all your loans, manage payments, and stay on top of your finances 
+          with ease. Our platform provides a comprehensive solution for monitoring your loans, interest rates, 
+          and repayment schedules all in one place.
+        </p>
+        <div class="hero-buttons">
+          <a href="sign-up.html" class="btn btn-primary btn-large">
+            Get Started Free
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+          <a href="login.html" class="btn btn-outline btn-large">
+            Sign In
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+          </a>
+        </div>
+        <div>
+          <span class="user-count" id="userCount">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            Loading users...
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+      <h3>Why Choose Loan Reminder?</h3>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">�</div>
+          <h4>View All Loans</h4>
+          <p>Keep track of all your loans in one place. See detailed information about each loan including balance, interest rate, and due dates.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💵</div>
+          <h4>Easy Loan Management</h4>
+          <p>Add new loans with ease. Our intuitive interface makes it simple to input and manage all your loan details.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💳</div>
+          <h4>Payment Tracking</h4>
+          <p>Track your payment history and never lose track of when payments are due. Stay organized and avoid late fees.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h4>Financial Insights</h4>
+          <p>Get clear insights into your financial obligations and make informed decisions about your money.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section">
+      <h3>About Loan Reminder</h3>
+      <p>
+        Loan Reminder is a comprehensive loan management platform designed to help individuals
+        manage their loans effectively. Whether you have personal loans, business loans, home
+        mortgages, or any other type of loan, our platform provides the tools you need to
+        stay on top of your financial obligations.
+      </p>
+      <p>
+        With features like automatic payment reminders, detailed loan tracking, and easy
+        payment history management, Loan Reminder makes it simple to maintain control over
+        your financial health.
+      </p>
+    </section>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+      <p>&copy; 2026 Loan Reminder. All rights reserved.</p>
+      <p class="business-email">📧 support@loanreminder.com | 📞 +254 700 123 456</p>
+    </footer>
+  </div>
+
+  <script src="app-config.js"></script>
+  <script>
+    // Load user count on page load
+    window.addEventListener('load', async () => {
+      try {
+        const response = await fetch('http://localhost:5000/stats/public');
+        const data = await response.json();
+        document.getElementById('userCount').innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          ${data.totalUsers.toLocaleString()} users on platform
+        `;
+      } catch (error) {
+        console.error('Failed to load user count:', error);
+        document.getElementById('userCount').textContent = '👥 500+ users on platform';
+      }
+    });
+  </script>
+</body>
+</html>
+

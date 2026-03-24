@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Loans - Loan Reminder</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #34d399;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --white: #ffffff;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: var(--gray-800);
+      line-height: 1.6;
+    }
+
+    .app-container {
+      min-height: 100vh;
+    }
+
+    .app-header {
+      background: var(--white);
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .header-content h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-secondary {
+      background: var(--gray-100);
+      color: var(--gray-700);
+      border: 1px solid var(--gray-200);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-200);
+    }
+
+    .loans-main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .summary-card {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--gray-100);
+      transition: all 0.2s;
+    }
+
+    .summary-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .summary-card.active {
+      border-top: 4px solid var(--primary);
+    }
+
+    .summary-card.overdue {
+      border-top: 4px solid var(--danger);
+    }
+
+    .summary-number {
+      display: block;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--gray-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .summary-label {
+      font-size: 0.875rem;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+    }
+
+    .filter-section {
+      background: var(--white);
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+      border: 1px solid var(--gray-100);
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--gray-100);
+      padding-bottom: 1rem;
+    }
+
+    .tab {
+      padding: 0.625rem 1.25rem;
+      border: none;
+      background: var(--gray-100);
+      cursor: pointer;
+      font-weight: 500;
+      border-radius: var(--radius);
+      transition: all 0.2s;
+      font-size: 0.875rem;
+      color: var(--gray-600);
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .tab:hover:not(.active) {
+      background: var(--gray-200);
+    }
+
+    .search-container {
+      display: flex;
+      gap: 1rem;
+    }
+
+    #searchInput {
+      flex: 1;
+      padding: 0.875rem 1.25rem;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      font-size: 0.9375rem;
+      transition: all 0.2s;
+    }
+
+    #searchInput:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgb(16 185 129 / 0.1);
+    }
+
+    #refreshBtn {
+      padding: 0.875rem 1.5rem;
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      font-size: 0.875rem;
+    }
+
+    #refreshBtn:hover {
+      background: var(--gray-200);
+    }
+
+    .loans-container {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .loan-card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      padding: 1.5rem;
+      transition: all 0.2s;
+      border: 1px solid var(--gray-100);
+      border-left: 4px solid var(--primary);
+    }
+
+    .loan-card:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+
+    .loan-card.overdue {
+      border-left-color: var(--danger);
+    }
+
+    .loan-card.paid {
+      border-left-color: var(--success);
+      opacity: 0.75;
+    }
+
+    .loan-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.25rem;
+    }
+
+    .loan-header h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+
+    .bank-name {
+      color: var(--gray-600);
+      font-size: 0.875rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .loan-status {
+      padding: 0.375rem 0.875rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+    }
+
+    .loan-status.active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .loan-status.overdue {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .loan-status.paid {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .loan-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .detail-row span:first-child {
+      color: var(--gray-600);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .detail-row span:last-child {
+      color: var(--gray-800);
+      font-size: 0.9375rem;
+      font-weight: 600;
+    }
+
+    .days-left span:last-child {
+      font-weight: 700;
+    }
+
+    .days-left .on-time {
+      color: var(--success);
+    }
+
+    .days-left .warning {
+      color: var(--warning);
+    }
+
+    .days-left .overdue {
+      color: var(--danger);
+    }
+
+    .loan-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn-small {
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+    }
+
+    .empty-state,
+    .error-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--gray-600);
+      background: var(--white);
+      border-radius: 16px;
+      border: 2px dashed var(--gray-200);
+    }
+
+    .empty-state svg {
+      fill: var(--gray-300);
+      margin-bottom: 1.5rem;
+    }
+
+    .empty-state h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: var(--gray-700);
+    }
+
+    .fab {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 64px;
+      height: 64px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-lg);
+      text-decoration: none;
+      color: white;
+      font-size: 2rem;
+      transition: all 0.2s;
+      z-index: 100;
+    }
+
+    .fab:hover {
+      transform: scale(1.1);
+      background: var(--primary-dark);
+    }
+
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+
+      .header-actions {
+        justify-content: center;
+      }
+
+      .loans-main {
+        padding: 1rem;
+      }
+
+      .search-container {
+        flex-direction: column;
+      }
+
+      .loan-actions {
+        flex-direction: column;
+      }
+
+      .fab {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 56px;
+        height: 56px;
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-content">
+        <h1>📋 My Loans</h1>
+        <div class="header-actions">
+          <a href="dashboard-new.html" class="btn btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Dashboard
+          </a>
+          <a href="add-loan.html" class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+            Add Loan
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="loans-main">
+      <div class="summary-cards">
+        <div class="summary-card">
+          <span class="summary-number" id="totalLoansCount">-</span>
+          <span class="summary-label">Total Loans</span>
+        </div>
+        <div class="summary-card active">
+          <span class="summary-number" id="activeLoansCount">-</span>
+          <span class="summary-label">Active</span>
+        </div>
+        <div class="summary-card overdue">
+          <span class="summary-number" id="overdueLoansCount">-</span>
+          <span class="summary-label">Overdue</span>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-tabs">
+          <button class="tab active" data-filter="all">All Loans</button>
+          <button class="tab" data-filter="active">Active</button>
+          <button class="tab" data-filter="overdue">Overdue</button>
+          <button class="tab" data-filter="paid">Paid</button>
+        </div>
+        <div class="search-container">
+          <input type="text" id="searchInput" placeholder="Search loans by name or bank...">
+          <button id="refreshBtn">🔄 Refresh</button>
+        </div>
+      </div>
+
+      <div class="loans-container" id="loansContainer">
+        <div class="empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+          </svg>
+          <h3>Loading loans...</h3>
+          <p>Please wait</p>
+        </div>
+      </div>
+
+      <a href="add-loan.html" class="fab">+</a>
+    </main>
+  </div>
+
+  <script src="app-config.js"></script>
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'login.html';
+
+    let allLoans = [];
+    let currentFilter = 'all';
+
+    async function loadLoans() {
+      try {
+        const response = await fetch('http://localhost:5000/loans', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        allLoans = data.loans || [];
+        renderLoans();
+        updateSummary();
+      } catch (error) {
+        console.error('Failed to load loans:', error);
+        document.getElementById('loansContainer').innerHTML = `
+          <div class="error-state">
+            <h3>❌ Failed to load loans</h3>
+            <p>Please check your connection and try again</p>
+            <button onclick="loadLoans()" class="btn btn-primary" style="margin-top: 1rem;">Retry</button>
+          </div>
+        `;
+      }
+    }
+
+    function renderLoans() {
+      const container = document.getElementById('loansContainer');
+      const filteredLoans = filterLoans(allLoans);
+
+      if (filteredLoans.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+            </svg>
+            <h3>No loans match your filter</h3>
+            <p>Try adjusting your search or filter</p>
+            <button onclick="loadLoans()" class="btn btn-secondary" style="margin-top: 1rem;">Refresh</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filteredLoans.map(loan => `
+        <div class="loan-card ${getLoanStatusClass(loan)}" data-loan-id="${loan._id}">
+          <div class="loan-header">
+            <div>
+              <h3>${loan.loanName}</h3>
+              <p class="bank-name">🏦 ${loan.bankName}</p>
+            </div>
+            <div class="loan-status ${getLoanStatusClass(loan)}">
+              ${getLoanStatusText(loan)}
+            </div>
+          </div>
+          <div class="loan-details">
+            <div class="detail-row">
+              <span>Amount:</span>
+              <span>KSh ${formatCurrency(loan.loanAmount)}</span>
+            </div>
+            <div class="detail-row">
+              <span>Due:</span>
+              <span>${formatDate(loan.dueDate)}</span>
+            </div>
+            <div class="detail-row days-left">
+              <span>Days left:</span>
+              <span class="${getDaysLeftClass(loan.dueDate)}">${daysLeft(loan.dueDate)}</span>
+            </div>
+          </div>
+          <div class="loan-actions">
+            <button class="btn btn-small btn-secondary" onclick="viewLoanDetails('${loan._id}')">View Details</button>
+            <button class="btn btn-small btn-primary" onclick="makePayment('${loan._id}')">Pay Now</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterLoans(loans) {
+      return loans.filter(loan => {
+        const matchesFilter = currentFilter === 'all' || loan.status === currentFilter;
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const matchesSearch = !searchTerm ||
+          loan.loanName.toLowerCase().includes(searchTerm) ||
+          loan.bankName.toLowerCase().includes(searchTerm);
+        return matchesFilter && matchesSearch;
+      });
+    }
+
+    function updateSummary() {
+      const total = allLoans.length;
+      const active = allLoans.filter(l => l.status === 'active').length;
+      const overdue = allLoans.filter(l => l.status === 'overdue').length;
+
+      document.getElementById('totalLoansCount').textContent = total;
+      document.getElementById('activeLoansCount').textContent = active;
+      document.getElementById('overdueLoansCount').textContent = overdue;
+    }
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelector('.tab.active').classList.remove('active');
+        tab.classList.add('active');
+        currentFilter = tab.dataset.filter;
+        renderLoans();
+      });
+    });
+
+    document.getElementById('searchInput').addEventListener('input', renderLoans);
+    document.getElementById('refreshBtn').addEventListener('click', loadLoans);
+
+    function getLoanStatusClass(loan) {
+      return loan.status || 'active';
+    }
+
+    function getLoanStatusText(loan) {
+      const status = loan.status || 'active';
+      return status.charAt(0).toUpperCase() + status.slice(1);
+    }
+
+    function getDaysLeftClass(dueDate) {
+      const days = daysLeft(dueDate);
+      if (days < 0) return 'overdue';
+      if (days < 7) return 'warning';
+      return 'on-time';
+    }
+
+    function daysLeft(dueDate) {
+      const due = new Date(dueDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      due.setHours(0, 0, 0, 0);
+      const diff = Math.floor((due - today) / (1000 * 60 * 60 * 24));
+      if (diff < 0) return `${Math.abs(diff)} days overdue`;
+      if (diff === 0) return 'Due today';
+      return `${diff} days`;
+    }
+
+    function formatCurrency(amount) {
+      return new Intl.NumberFormat('en-KE', {
+        minimumFractionDigits: 0
+      }).format(amount);
+    }
+
+    function formatDate(dateStr) {
+      return new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      }).format(new Date(dateStr));
+    }
+
+    function viewLoanDetails(id) {
+      alert('Loan details feature coming soon!');
+    }
+
+    function makePayment(id) {
+      localStorage.setItem('selectedLoanId', id);
+      window.location.href = 'payment-history.html';
+    }
+
+    loadLoans();
+  </script>
+</body>
+</html>
+

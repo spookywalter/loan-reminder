@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const path = require('path');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -32,6 +33,15 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 const ADMIN_SECRET_KEY = process.env.ADMIN_SECRET_KEY || crypto.randomBytes(32).toString('hex');
+const frontendPath = path.join(__dirname, 'public');
+const allowedOrigins = new Set([
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  process.env.FRONTEND_URL,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null
+].filter(Boolean));
 
 // Security middleware - relaxed for development
 app.use(helmet({
@@ -58,7 +68,22 @@ const authLimiter = rateLimit({
 // Middleware
 app.use(bodyParser.json({ limit: '10kb' }));
 app.use(cors({
-  origin: ['http://localhost:5500', 'http://127.0.0.1:5500'],
+  origin: (origin, callback) => {
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    try {
+      const hostname = new URL(origin).hostname;
+      if (allowedOrigins.has(origin) || hostname.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
+    } catch (error) {
+      return callback(new Error('Invalid origin'));
+    }
+
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 app.use('/api', apiLimiter);
@@ -890,6 +915,7 @@ app.post('/api/mpesa/check-status', verifyToken, async (req, res) => {
 // ==================== END M-PESA ROUTES ====================
 
 // Overdue loan checker (cron job - runs daily at midnight)
+if (!process.env.VERCEL) {
 cron.schedule('0 0 * * *', async () => {
   try {
     const now = new Date();
@@ -901,6 +927,21 @@ cron.schedule('0 0 * * *', async () => {
   } catch (err) {
     console.error('❌ Cron job error:', err);
   }
+});
+}
+
+app.use(express.static(frontendPath));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
+app.get(/^\/(?!api\/).*/, (req, res, next) => {
+  if (req.method !== 'GET') {
+    return next();
+  }
+
+  res.sendFile(path.join(frontendPath, 'index.html'));
 });
 
 // 404 handler
@@ -921,6 +962,7 @@ process.on('SIGTERM', async () => {
   process.exit(0);
 });
 
+if (require.main === module) {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log('📊 /stats/public - Live user count');
@@ -930,5 +972,6 @@ app.listen(PORT, () => {
   console.log('💡 Frontend ready: http://localhost:5500');
   console.log(`🔑 ADMIN_SECRET_KEY: ${ADMIN_SECRET_KEY.substring(0, 8)}...`);
 });
+}
 
 module.exports = app;

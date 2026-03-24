@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment History - Loan Reminder</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --white: #ffffff;
+      --success: #10b981;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8fafc;
+      color: var(--gray-800);
+    }
+
+    .payment-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .page-header {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      background: var(--gray-100);
+      color: var(--gray-700);
+      text-decoration: none;
+      border-radius: var(--radius);
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      border: 1px solid var(--gray-200);
+    }
+
+    .nav-back:hover {
+      background: var(--gray-200);
+      transform: translateY(-1px);
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .payment-section {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      border: 1px solid var(--gray-100);
+    }
+
+    .payment-table-wrapper {
+      overflow-x: auto;
+    }
+
+    .payment-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .payment-table thead {
+      background: var(--gray-50);
+      border-bottom: 2px solid var(--gray-200);
+    }
+
+    .payment-table th {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.75rem;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .payment-table td {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--gray-100);
+      vertical-align: middle;
+      font-size: 0.9375rem;
+    }
+
+    .payment-table tbody tr {
+      transition: all 0.2s;
+    }
+
+    .payment-table tbody tr:hover {
+      background-color: var(--gray-50);
+    }
+
+    .payment-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status-tag {
+      padding: 0.375rem 0.875rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-confirmed {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .amount {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1rem;
+    }
+
+    .payment-method {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+    }
+
+    .method-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--gray-100);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+    }
+
+    .loading-message,
+    .empty-message {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--gray-600);
+    }
+
+    .loading-message div {
+      font-size: 1.125rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-message svg {
+      fill: var(--gray-300);
+      margin-bottom: 1rem;
+    }
+
+    .empty-message h3 {
+      font-size: 1.25rem;
+      color: var(--gray-700);
+      margin-bottom: 0.5rem;
+    }
+
+    .error-message {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--danger);
+    }
+
+    .refresh-btn {
+      padding: 0.75rem 1.5rem;
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      font-size: 0.875rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .refresh-btn:hover {
+      background: var(--gray-200);
+    }
+
+    @media (max-width: 768px) {
+      .payment-page {
+        padding: 1rem;
+      }
+
+      .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+
+      .nav-back {
+        justify-content: center;
+      }
+
+      .page-title {
+        justify-content: center;
+      }
+
+      .payment-table th,
+      .payment-table td {
+        padding: 0.75rem 1rem;
+        font-size: 0.8125rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="payment-page">
+    <div class="page-header">
+      <a href="dashboard-new.html" class="nav-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back to Dashboard
+      </a>
+      <h1 class="page-title">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+        Payment History
+      </h1>
+      <button onclick="loadPaymentHistory()" class="refresh-btn" style="margin-left: auto;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"/>
+          <polyline points="1 20 1 14 7 14"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+
+    <section class="payment-section">
+      <div class="payment-table-wrapper">
+        <table class="payment-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Loan Name</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="paymentsTbody">
+            <tr>
+              <td colspan="5" class="loading-message">
+                <div>🔄 Loading your payments...</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="app-config.js"></script>
+  <script>
+    const methodIcons = {
+      mpesa: '📱',
+      bank_transfer: '🏦',
+      online: '💻',
+      cash: '💵',
+      paypal: '🅿️',
+      credit_card: '💳',
+      debit_card: '💳',
+      default: '💰'
+    };
+
+    async function loadPaymentHistory() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const tbody = document.getElementById('paymentsTbody');
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" class="loading-message">
+            <div>🔄 Loading your payments...</div>
+          </td>
+        </tr>
+      `;
+
+      try {
+        const resp = await fetch('http://localhost:5000/payments', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        const data = await resp.json();
+
+        if (resp.ok && data.payments && data.payments.length > 0) {
+          tbody.innerHTML = data.payments.map(payment => {
+            const method = payment.paymentMethod || 'mpesa';
+            const icon = methodIcons[method] || methodIcons.default;
+            const loanName = payment.loanId?.loanName || 'General Payment';
+            const date = new Date(payment.paymentDate).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+
+            // Get actual payment status
+            const status = payment.status || 'pending';
+            const statusDisplay = {
+              'pending': { text: '⏳ Pending', class: 'status-pending', icon: '' },
+              'approved': { text: '✅ Approved', class: 'status-confirmed', icon: '✓' },
+              'rejected': { text: '❌ Rejected', class: 'status-rejected', icon: '✗' }
+            }[status];
+
+            return `
+              <tr>
+                <td>
+                  <div style="font-weight: 500;">${date}</div>
+                </td>
+                <td>
+                  <div style="font-weight: 600; color: var(--gray-800);">${loanName}</div>
+                </td>
+                <td>
+                  <span class="amount">KSh ${payment.amount.toLocaleString()}</span>
+                </td>
+                <td>
+                  <div class="payment-method">
+                    <span class="method-icon">${icon}</span>
+                    <span>${method.replace('_', ' ').toUpperCase()}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="status-tag ${statusDisplay.class}">
+                    ${statusDisplay.icon ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>` : ''}
+                    ${statusDisplay.text}
+                  </span>
+                  ${payment.rejectionReason ? `<div style="font-size: 0.75rem; color: var(--danger); margin-top: 0.25rem;">Reason: ${payment.rejectionReason}</div>` : ''}
+                </td>
+              </tr>
+            `;
+          }).join('');
+        } else {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="5" class="empty-message">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6v2l8 5 8-5V6l-8 5z"/>
+                </svg>
+                <h3>No payments yet</h3>
+                <p>Your payment history will show here once you make payments</p>
+              </td>
+            </tr>
+          `;
+        }
+      } catch (error) {
+        console.error('Payments error:', error);
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="error-message">
+              <div style="font-size: 1.25rem; margin-bottom: 0.5rem;">❌ Failed to load payments</div>
+              <p>Please check your connection and try again</p>
+              <button onclick="loadPaymentHistory()" class="refresh-btn" style="margin-top: 1rem;">
+                🔄 Retry
+              </button>
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', loadPaymentHistory);
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Loan Reminder</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #34d399;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --white: #ffffff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --border-color: #e5e7eb;
+    }
+
+    [data-theme="dark"] {
+      --gray-50: #1a1a2e;
+      --gray-100: #16213e;
+      --gray-200: #1f2937;
+      --gray-300: #374151;
+      --gray-600: #9ca3af;
+      --gray-700: #d1d5db;
+      --gray-800: #e5e7eb;
+      --gray-900: #f9fafb;
+      --white: #0f172a;
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --border-color: #374151;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .admin-container {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .admin-sidebar {
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .sidebar-header {
+      padding: 2rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--white);
+    }
+
+    .sidebar-header .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+      padding: 1rem 0;
+      flex: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 1rem 1.5rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--white);
+    }
+
+    .nav-item.active {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--white);
+      border-left-color: var(--primary);
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .nav-item span {
+      font-size: 0.9375rem;
+      font-weight: 500;
+    }
+
+    .sidebar-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 1rem 1.5rem;
+      width: 100%;
+      background: rgba(239, 68, 68, 0.15);
+      border: none;
+      border-radius: var(--radius);
+      color: var(--danger);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9375rem;
+      font-weight: 500;
+    }
+
+    .logout-btn:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    /* Main Content Styles */
+    .admin-main {
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .admin-main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .admin-main-header h1 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .header-subtitle {
+      color: var(--gray-600);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-secondary {
+      background: var(--white);
+      color: var(--gray-700);
+      border: 1px solid var(--gray-300);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-50);
+      border-color: var(--gray-600);
+    }
+
+    /* Stats Grid */
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-secondary);
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      transition: all 0.2s, background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .stat-icon.users { background: #dbeafe; }
+    .stat-icon.loans { background: #dcfce7; }
+    .stat-icon.payments { background: #fef3c7; }
+    .stat-icon.revenue { background: #ede9fe; }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--gray-900);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      color: var(--gray-600);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    /* Content Grid */
+    .admin-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-header h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--gray-50);
+    }
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--gray-600);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 0.875rem;
+      color: var(--gray-700);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: var(--gray-50);
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status-badge.active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-badge.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-badge.overdue {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* Payment List */
+    .payment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .payment-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      background: var(--gray-50);
+      border-radius: 12px;
+      border-left: 4px solid var(--primary);
+      transition: all 0.2s;
+    }
+
+    .payment-item:hover {
+      background: var(--gray-100);
+      transform: translateX(4px);
+    }
+
+    .payment-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .payment-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--white);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .payment-details h3 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--gray-800);
+      margin-bottom: 0.25rem;
+    }
+
+    .payment-details p {
+      font-size: 0.8125rem;
+      color: var(--gray-600);
+    }
+
+    .payment-amount {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-align: right;
+    }
+
+    .payment-date {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+      margin-top: 0.25rem;
+    }
+
+    .view-all-btn {
+      color: var(--primary);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .view-all-btn:hover {
+      color: var(--primary-dark);
+    }
+
+    .btn-promote {
+      padding: 0.5rem 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .btn-promote:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-container {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .admin-container {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-sidebar {
+        height: auto;
+        position: relative;
+      }
+
+      .admin-content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .admin-main {
+        padding: 1rem;
+      }
+
+      .admin-stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-actions {
+        width: 100%;
+      }
+
+      .btn {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <h2>
+          <div class="logo-icon">💰</div>
+          Admin Panel
+        </h2>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="admin-dashboard.html" class="nav-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" onclick="openUsersModal(); return false;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span>Users</span>
+        </a>
+        <a href="view-loans.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+          <span>Loans</span>
+        </a>
+        <a href="admin-payments.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          <span>Payments</span>
+        </a>
+        <a href="#" class="nav-item" onclick="openReportsModal(); return false;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          <span>Reports</span>
+        </a>
+        <a href="admin-queries.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+          </svg>
+          <span>Support Queries</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Logout
+        </button>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-main-header">
+        <div>
+          <h1>Dashboard Overview</h1>
+          <p class="header-subtitle">Welcome back! Here's what's happening today.</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="toggleTheme()" id="themeToggleBtn">
+            <svg id="moonIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+            <svg id="sunIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+            <span id="themeText">Dark</span>
+          </button>
+          <button class="btn btn-secondary" onclick="refreshData()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"/>
+              <polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+            Refresh
+          </button>
+          <button class="btn btn-primary" onclick="exportData()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Export Report
+          </button>
+        </div>
+      </header>
+
+      <div class="admin-stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div>
+              <span class="stat-number" id="totalUsers">-</span>
+              <span class="stat-label">Total Users</span>
+            </div>
+            <div class="stat-icon users">👥</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div>
+              <span class="stat-number" id="totalLoans">-</span>
+              <span class="stat-label">Active Loans</span>
+            </div>
+            <div class="stat-icon loans">📋</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div>
+              <span class="stat-number" id="totalPayments">-</span>
+              <span class="stat-label">Total Payments</span>
+            </div>
+            <div class="stat-icon payments">💳</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div>
+              <span class="stat-number" id="revenue">KSh 0</span>
+              <span class="stat-label">Total Revenue</span>
+            </div>
+            <div class="stat-icon revenue">💵</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-content">
+        <div class="card">
+          <div class="card-header">
+            <h2>Recent Users</h2>
+            <button class="view-all-btn" onclick="openUsersModal()">
+              View All
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Joined</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="recentUsers">
+                  <tr>
+                    <td>
+                      <div class="user-info">
+                        <div class="user-avatar">JD</div>
+                        <span>John Doe</span>
+                      </div>
+                    </td>
+                    <td>john@example.com</td>
+                    <td>Jan 15, 2024</td>
+                    <td><span class="status-badge active">Active</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Recent Payments</h2>
+            <button class="view-all-btn" onclick="openPaymentsModal()">
+              View All
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+          <div class="card-body">
+            <div class="payment-list" id="recentPayments">
+              <div class="payment-item">
+                <div class="payment-info">
+                  <div class="payment-icon">📱</div>
+                  <div class="payment-details">
+                    <h3>M-Pesa Payment</h3>
+                    <p>John Doe • Personal Loan</p>
+                    <p class="payment-date">Jan 20, 2024 at 2:30 PM</p>
+                  </div>
+                </div>
+                <div>
+                  <div class="payment-amount">KSh 5,000</div>
+                  <div class="payment-date">Completed</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app-config.js"></script>
+  <script>
+    const token = localStorage.getItem('token');
+
+    // Check admin authentication immediately
+    if (!token) {
+      console.warn('No token found, redirecting to login');
+      window.location.href = 'login.html';
+    } else {
+      try {
+        const decoded = JSON.parse(atob(token.split('.')[1]));
+        console.log('Token decoded:', decoded);
+        
+        if (decoded.isAdmin !== true) {
+          console.warn('User is not admin, redirecting to user dashboard');
+          window.location.href = 'dashboard-new.html';
+        }
+      } catch (e) {
+        console.error('Token decode error:', e);
+        window.location.href = 'login.html';
+      }
+    }
+
+    // Theme Toggle Functionality
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const moonIcon = document.getElementById('moonIcon');
+      const sunIcon = document.getElementById('sunIcon');
+      const themeText = document.getElementById('themeText');
+
+      if (currentTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+        if (moonIcon) moonIcon.style.display = 'block';
+        if (sunIcon) sunIcon.style.display = 'none';
+        if (themeText) themeText.textContent = 'Dark';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        if (moonIcon) moonIcon.style.display = 'none';
+        if (sunIcon) sunIcon.style.display = 'block';
+        if (themeText) themeText.textContent = 'Light';
+      }
+    }
+
+    // Load saved theme on page load
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      const moonIcon = document.getElementById('moonIcon');
+      const sunIcon = document.getElementById('sunIcon');
+      const themeText = document.getElementById('themeText');
+      if (moonIcon) moonIcon.style.display = 'none';
+      if (sunIcon) sunIcon.style.display = 'block';
+      if (themeText) themeText.textContent = 'Light';
+    }
+
+    async function loadAdminData() {
+      try {
+        // Load stats
+        const statsRes = await fetch('http://localhost:5000/admin/stats', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (statsRes.ok) {
+          const stats = await statsRes.json();
+          document.getElementById('totalUsers').textContent = stats.stats.users.total.toLocaleString();
+          document.getElementById('totalLoans').textContent = stats.stats.loans.toLocaleString();
+          document.getElementById('totalPayments').textContent = stats.stats.payments.toLocaleString();
+          
+          // Calculate revenue (example: sum of all payments)
+          const paymentsRes = await fetch('http://localhost:5000/admin/all-payments', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (paymentsRes.ok) {
+            const paymentsData = await paymentsRes.json();
+            const totalRevenue = paymentsData.payments.reduce((sum, p) => sum + p.amount, 0);
+            document.getElementById('revenue').textContent = 'KSh ' + totalRevenue.toLocaleString();
+          }
+        }
+
+        // Load recent users
+        const usersRes = await fetch('http://localhost:5000/admin/users', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (usersRes.ok) {
+          const usersData = await usersRes.json();
+          renderUsers(usersData.users.slice(0, 5));
+        }
+
+        // Load recent payments
+        const paymentsRes = await fetch('http://localhost:5000/admin/all-payments', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (paymentsRes.ok) {
+          const paymentsData = await paymentsRes.json();
+          renderPayments(paymentsData.payments.slice(0, 5));
+        }
+
+      } catch (error) {
+        console.error('Admin data load error:', error);
+        // Show demo data on error
+        showDemoData();
+      }
+    }
+
+    function showDemoData() {
+      document.getElementById('totalUsers').textContent = '247';
+      document.getElementById('totalLoans').textContent = '89';
+      document.getElementById('totalPayments').textContent = '156';
+      document.getElementById('revenue').textContent = 'KSh 2,450,000';
+    }
+
+    function renderUsers(users) {
+      const tbody = document.getElementById('recentUsers');
+      if (!users || users.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td>
+              <div class="user-info">
+                <div class="user-avatar">JD</div>
+                <span>John Doe</span>
+              </div>
+            </td>
+            <td>john@example.com</td>
+            <td>Jan 15, 2024</td>
+            <td><span class="status-badge active">Active</span></td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = users.map(user => {
+        const initials = user.username.substring(0, 2).toUpperCase();
+        const date = new Date(user.createdAt).toLocaleDateString('en-US', { 
+          month: 'short', day: 'numeric', year: 'numeric' 
+        });
+        return `
+          <tr>
+            <td>
+              <div class="user-info">
+                <div class="user-avatar">${initials}</div>
+                <span>${user.username}</span>
+              </div>
+            </td>
+            <td>${user.email || 'N/A'}</td>
+            <td>${date}</td>
+            <td><span class="status-badge active">Active</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderPayments(payments) {
+      const container = document.getElementById('recentPayments');
+      if (!payments || payments.length === 0) {
+        container.innerHTML = `
+          <div class="payment-item">
+            <div class="payment-info">
+              <div class="payment-icon">📱</div>
+              <div class="payment-details">
+                <h3>M-Pesa Payment</h3>
+                <p>John Doe • Personal Loan</p>
+                <p class="payment-date">Jan 20, 2024 at 2:30 PM</p>
+              </div>
+            </div>
+            <div>
+              <div class="payment-amount">KSh 5,000</div>
+              <div class="payment-date">Completed</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const icons = { mpesa: '📱', bank_transfer: '🏦', online: '💻', cash: '💵' };
+      
+      container.innerHTML = payments.map(payment => {
+        const date = new Date(payment.paymentDate).toLocaleDateString('en-US', { 
+          month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        const icon = icons[payment.paymentMethod] || '💳';
+        const username = payment.userId?.username || 'Unknown';
+        const loanName = payment.loanId?.loanName || 'Loan';
+        
+        return `
+          <div class="payment-item">
+            <div class="payment-info">
+              <div class="payment-icon">${icon}</div>
+              <div class="payment-details">
+                <h3>${payment.paymentMethod === 'mpesa' ? 'M-Pesa' : payment.paymentMethod.replace('_', ' ')} Payment</h3>
+                <p>${username} • ${loanName}</p>
+                <p class="payment-date">${date}</p>
+              </div>
+            </div>
+            <div>
+              <div class="payment-amount">KSh ${payment.amount.toLocaleString()}</div>
+              <div class="payment-date" style="color: var(--success);">Completed</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = 'login.html';
+    }
+
+    // Show modal helper
+    function showModal(content) {
+      const overlay = document.createElement('div');
+      overlay.className = 'modal-overlay';
+      overlay.id = 'modalOverlay';
+      overlay.onclick = function(e) {
+        if (e.target === overlay) closeModal();
+      };
+
+      const container = document.createElement('div');
+      container.className = 'modal-container';
+      container.innerHTML = content;
+
+      overlay.appendChild(container);
+      document.body.appendChild(overlay);
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close modal helper
+    function closeModal() {
+      const overlay = document.getElementById('modalOverlay');
+      if (overlay) {
+        overlay.remove();
+        document.body.style.overflow = '';
+      }
+    }
+
+    function refreshData() {
+      loadAdminData();
+    }
+
+    function exportData() {
+      const stats = {
+        totalUsers: document.getElementById('totalUsers').textContent,
+        totalLoans: document.getElementById('totalLoans').textContent,
+        totalPayments: document.getElementById('totalPayments').textContent,
+        revenue: document.getElementById('revenue').textContent,
+        exportDate: new Date().toLocaleString()
+      };
+      
+      const confirmExport = confirm(`Export Admin Report\n\nGenerate a CSV report with:\n• All users data\n• All loans\n• All payments\n• Revenue statistics\n\nProceed?`);
+      
+      if (confirmExport) {
+        // Create CSV content
+        const csvContent = `Loan Reminder Admin Report\nGenerated: ${stats.exportDate}\n\nSummary\nTotal Users,${stats.totalUsers}\nTotal Loans,${stats.totalLoans}\nTotal Payments,${stats.totalPayments}\nTotal Revenue,${stats.revenue}\n`;
+        
+        // Download CSV
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `admin-report-${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        alert('Report exported successfully!');
+      }
+    }
+
+    // Open Users Modal
+    async function openUsersModal() {
+      try {
+        const response = await fetch('http://localhost:5000/admin/users', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        
+        if (response.ok && data.users) {
+          const usersList = data.users.map(user => {
+            const initials = user.username.substring(0, 2).toUpperCase();
+            const date = new Date(user.createdAt).toLocaleDateString('en-US', { 
+              year: 'numeric', month: 'short', day: 'numeric' 
+            });
+            const adminBadge = user.isAdmin ? 
+              '<span class="status-badge active">Admin</span>' : 
+              `<button onclick="promoteToAdmin('${user._id}', '${user.username}')" class="btn-promote">Make Admin</button>`;
+            
+            return `
+              <div class="payment-item" style="border-left-color: var(--primary);">
+                <div class="payment-info">
+                  <div class="payment-icon" style="background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; font-weight: 600;">${initials}</div>
+                  <div class="payment-details">
+                    <h3>${user.username}</h3>
+                    <p>${user.email || 'No email'}</p>
+                    <p class="payment-date">Joined: ${date}</p>
+                  </div>
+                </div>
+                <div>
+                  ${adminBadge}
+                </div>
+              </div>
+            `;
+          }).join('');
+          
+          const modalContent = `
+            <div style="padding: 2rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="font-size: 1.5rem; color: var(--text-primary);">Manage Users</h2>
+                <button onclick="openCreateAdminModal()" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="8.5" cy="7" r="4"/>
+                    <line x1="20" y1="8" x2="20" y2="14"/>
+                    <line x1="23" y1="11" x2="17" y2="11"/>
+                  </svg>
+                  Create Admin
+                </button>
+              </div>
+              <div style="max-height: 500px; overflow-y: auto;">
+                ${usersList}
+              </div>
+              <div style="margin-top: 1.5rem; text-align: center;">
+                <button onclick="closeModal()" class="btn btn-secondary" style="padding: 0.75rem 2rem;">Close</button>
+              </div>
+            </div>
+          `;
+          
+          showModal(modalContent);
+        }
+      } catch (error) {
+        console.error('Error loading users:', error);
+        alert('Failed to load users');
+      }
+    }
+
+    // Promote user to admin
+    async function promoteToAdmin(userId, username) {
+      const confirmPromote = confirm(`Promote ${username} to Admin?\n\nThis user will have full admin access to the system.`);
+      
+      if (!confirmPromote) return;
+      
+      try {
+        const response = await fetch(`http://localhost:5000/admin/promote-user/${userId}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          alert(`✅ ${username} has been promoted to Admin!`);
+          openUsersModal(); // Refresh the list
+        } else {
+          alert('Failed to promote user: ' + (data.error || 'Unknown error'));
+        }
+      } catch (error) {
+        console.error('Error promoting user:', error);
+        alert('Network error. Please try again.');
+      }
+    }
+
+    // Open Create Admin Modal
+    function openCreateAdminModal() {
+      const modalContent = `
+        <div style="padding: 2rem;">
+          <h2 style="font-size: 1.5rem; color: var(--text-primary); margin-bottom: 1.5rem;">Create New Admin</h2>
+          <form id="createAdminForm" onsubmit="createNewAdmin(event)">
+            <div class="form-group">
+              <label>Username</label>
+              <input type="text" id="newAdminUsername" required placeholder="Choose a username" minlength="3">
+            </div>
+            <div class="form-group">
+              <label>Email (optional)</label>
+              <input type="email" id="newAdminEmail" placeholder="admin@example.com">
+            </div>
+            <div class="form-group">
+              <label>Password</label>
+              <input type="password" id="newAdminPassword" required placeholder="Minimum 6 characters" minlength="6">
+            </div>
+            <div class="form-group">
+              <label>Admin Secret Key</label>
+              <input type="password" id="adminSecretKey" required placeholder="Enter admin secret key">
+              <small style="color: var(--text-secondary); margin-top: 0.5rem; display: block;">Contact system administrator for the secret key</small>
+            </div>
+            <div id="createAdminMessage" style="margin-bottom: 1rem;"></div>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+              <button type="button" onclick="closeModal()" class="btn btn-secondary" style="padding: 0.75rem 1.5rem;">Cancel</button>
+              <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="8.5" cy="7" r="4"/>
+                  <line x1="20" y1="8" x2="20" y2="14"/>
+                  <line x1="23" y1="11" x2="17" y2="11"/>
+                </svg>
+                Create Admin
+              </button>
+            </div>
+          </form>
+        </div>
+      `;
+      
+      showModal(modalContent);
+    }
+
+    // Create new admin
+    async function createNewAdmin(event) {
+      event.preventDefault();
+      
+      const username = document.getElementById('newAdminUsername').value.trim();
+      const email = document.getElementById('newAdminEmail').value.trim();
+      const password = document.getElementById('newAdminPassword').value;
+      const secretKey = document.getElementById('adminSecretKey').value;
+      const messageEl = document.getElementById('createAdminMessage');
+      
+      messageEl.innerHTML = '<p style="color: var(--warning);">Creating admin account...</p>';
+      
+      try {
+        const response = await fetch('http://localhost:5000/admin/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password, secretKey })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          messageEl.innerHTML = `
+            <div style="background: #dcfce7; color: #166534; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+              <strong>✅ Admin created successfully!</strong><br>
+              Username: ${username}<br>
+              Password: ${password}<br><br>
+              <small>Save these credentials securely!</small>
+            </div>
+          `;
+          
+          setTimeout(() => {
+            closeModal();
+            alert(`New admin created:\nUsername: ${username}\nPassword: ${password}\n\nSave these credentials!`);
+          }, 2000);
+        } else {
+          messageEl.innerHTML = `<p style="color: var(--danger);">❌ ${data.error || 'Failed to create admin'}</p>`;
+        }
+      } catch (error) {
+        console.error('Error creating admin:', error);
+        messageEl.innerHTML = '<p style="color: var(--danger);">❌ Network error. Please try again.</p>';
+      }
+    }
+
+    // Open Payments Modal
+    async function openPaymentsModal() {
+      try {
+        const response = await fetch('http://localhost:5000/admin/all-payments', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        
+        if (response.ok && data.payments) {
+          const paymentsList = data.payments.map(p => {
+            const date = new Date(p.paymentDate).toLocaleDateString('en-US', {
+              year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+            return `${p.loanId?.loanName || 'Loan'} - KSh ${p.amount.toLocaleString()} by ${p.userId?.username || 'Unknown'} on ${date}`;
+          }).join('\n');
+          
+          alert('Recent Payments:\n\n' + (paymentsList || 'No payments yet'));
+        }
+      } catch (error) {
+        console.error('Error loading payments:', error);
+        alert('Failed to load payments');
+      }
+    }
+
+    // Open Reports Modal
+    function openReportsModal() {
+      alert('Reports feature coming soon!\n\nThis will show:\n• Monthly revenue charts\n• User growth statistics\n• Loan performance metrics\n• Payment analytics');
+    }
+
+    // Load data on page load
+    loadAdminData();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loan Reminder - Dashboard</title>
+  <style>
+    :root {
+      --primary-green: #1a472a;
+      --dark-green: #0d2818;
+      --light-green: #2d5a3f;
+      --bg-gradient-start: #1a472a;
+      --bg-gradient-end: #2d5a3f;
+      --white: #ffffff;
+      --light-gray: #e5e7eb;
+      --gray: #6b7280;
+      --dark-gray: #374151;
+      --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+<div class="dashboard-header">
+      <div class="header-top">
+        <h1>Loan Reminder</h1>
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+          <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+          <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="display:none;"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+          <span id="themeText">Dark</span>
+        </button>
+        <div class="dropdown">
+          <button class="dropbtn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+              <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+            </svg>
+          </button>
+          <div class="dropdown-content">
+            <a href="view-loans.html">View Loans</a>
+            <a href="add-loan.html">Add Loan</a>
+      <a href="payment-history.html" class="dropdown-item">Payment History</a>
+            <a href="support.html" class="dropdown-item">Support</a>
+            <a href="login.html" class="logout-link">Logout</a>
+          </div>
+        </div>
+      </div>
+      <p class="subtitle">Manage Your Loans Efficiently</p>
+    </div>
+    <div class="dashboard-content">
+      <div class="welcome-section">
+        <h2>Welcome to Your Dashboard!</h2>
+        <p>Track your loans, manage payments, and stay on top of your finances.</p>
+      </div>
+      
+      <div class="quick-stats">
+        <div class="stat-card">
+<div class="stat-value" id="totalBalance" style="color: #1a472a; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">ksh0</div>
+          <div class="stat-label">Total Balance</div>
+        </div>
+        <div class="stat-card">
+<div class="stat-value" id="activeLoans" style="color: white; font-weight: bold;">0</div>
+          <div class="stat-label">Active Loans</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="pendingPayments" style="color: #dc3545;">0</div>
+          <div class="stat-label">Pending Payments</div>
+        </div>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card" onclick="window.location.href='view-loans.html'" style="cursor: pointer;">
+          <div class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/>
+            </svg>
+          </div>
+          <h3>View Loans</h3>
+          <p>Check your current loans and their statuses.</p>
+        </div>
+        <div class="feature-card" onclick="window.location.href='add-loan.html'" style="cursor: pointer;">
+          <div class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+          </div>
+          <h3>Add Loan</h3>
+          <p>Add new loans to keep track of payments.</p>
+        </div>
+        <div class="feature-card" onclick="openQuickPayModal()" style="cursor: pointer;">
+          <div class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+            </svg>
+          </div>
+          <h3>Quick Pay</h3>
+          <p>Make a payment quickly on any loan.</p>
+        </div>
+        <div class="feature-card" onclick="window.location.href='payment-history.html'" style="cursor: pointer;">
+          <div class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+            </svg>
+          </div>
+          <h3>Payment History</h3>
+          <p>View your loan payment history.</p>
+        </div>
+        <div class="feature-card" onclick="window.location.href='support.html'" style="cursor: pointer;">
+          <div class="icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+            </svg>
+          </div>
+          <h3>Support</h3>
+          <p>Submit queries and get help from admin.</p>
+        </div>
+      </div>
+
+      <a href="login.html" class="logout-btn">Logout</a>
+    </div>
+  </div>
+
+  <!-- Quick Pay Modal -->
+  <div id="quickPayModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Quick Pay</h3>
+        <button class="modal-close" onclick="closeQuickPayModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="quickPayLoading" class="loading-indicator" style="color: var(--dark-gray);">
+          <div class="spinner"></div>
+          <p>Loading your loans...</p>
+        </div>
+        
+        <div id="quickPayNoLoans" class="empty-state" style="display: none;">
+          <h3>No Active Loans</h3>
+          <p>You don't have any active loans to pay.</p>
+          <a href="add-loan.html" class="btn btn-primary" style="width: auto; margin-top: 16px;">Add Your First Loan</a>
+        </div>
+        
+        <div id="quickPayLoanList" style="display: none;">
+          <p style="margin-bottom: 16px; color: var(--gray);">Select a loan to make payment:</p>
+          <div id="loanSelectList" style="max-height: 200px; overflow-y: auto; margin-bottom: 20px;">
+            <!-- Loans will be populated here -->
+          </div>
+          
+          <div id="quickPayFormSection" style="display: none;">
+            <div class="form-group">
+              <label>Payment Amount (ksh)</label>
+              <input type="number" id="quickPayAmount" placeholder="Enter amount" required min="1">
+            </div>
+            
+            <div class="quick-amount-buttons">
+              <button type="button" class="quick-amount-btn" onclick="setQuickPayAmount('minimum')">Minimum</button>
+              <button type="button" class="quick-amount-btn" onclick="setQuickPayAmount('partial')">Partial</button>
+              <button type="button" class="quick-amount-btn" onclick="setQuickPayAmount('full')">Full</button>
+            </div>
+            
+            <div class="form-group">
+              <label>Payment Method</label>
+              <select id="quickPayMethod" required onchange="toggleQuickPayDetails()">
+                <option value="">Select Payment Method</option>
+                <option value="mpesa">M-Pesa (Mobile Money)</option>
+                <option value="bank_transfer">Bank Transfer</option>
+                <option value="online">Online Payment</option>
+                <option value="credit_card">Credit Card</option>
+                <option value="debit_card">Debit Card</option>
+                <option value="paypal">PayPal</option>
+                <option value="stripe">Stripe</option>
+                <option value="auto_debit">Auto Debit</option>
+                <option value="standing_order">Standing Order</option>
+                <option value="ussd">USSD</option>
+                <option value="qr_code">QR Code</option>
+                <option value="cash">Cash</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            
+            <!-- M-Pesa Details -->
+            <div id="quickMpesaDetails" class="payment-details" style="display: none;">
+              <div class="form-group">
+                <label>M-Pesa Phone Number</label>
+                <input type="tel" id="quickMpesaPhone" placeholder="e.g., 254712345678">
+              </div>
+              <p class="payment-instruction">You will receive an STK push prompt on your phone to complete payment.</p>
+            </div>
+            
+            <!-- Credit/Debit Card Details -->
+            <div id="quickCardDetails" class="payment-details" style="display: none;">
+              <div class="form-group">
+                <label>Card Number</label>
+                <input type="text" id="quickCardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Expiry Date</label>
+                  <input type="text" id="quickCardExpiry" placeholder="MM/YY" maxlength="5">
+                </div>
+                <div class="form-group">
+                  <label>CVV</label>
+                  <input type="text" id="quickCardCvv" placeholder="123" maxlength="4">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Cardholder Name</label>
+                <input type="text" id="quickCardName" placeholder="Name on card">
+              </div>
+            </div>
+            
+            <!-- PayPal Details -->
+            <div id="quickPaypalDetails" class="payment-details" style="display: none;">
+              <div class="form-group">
+                <label>PayPal Email</label>
+                <input type="email" id="quickPaypalEmail" placeholder="your@email.com">
+              </div>
+              <p class="payment-instruction">You will be redirected to PayPal to complete payment.</p>
+            </div>
+            
+            <!-- Bank Transfer Details -->
+            <div id="quickBankDetails" class="payment-details" style="display: none;">
+              <div class="form-group">
+                <label>Account Number</label>
+                <input type="text" id="quickBankAccount" placeholder="Enter account number">
+              </div>
+              <div class="form-group">
+                <label>Bank Name</label>
+                <input type="text" id="quickBankName" placeholder="Enter bank name">
+              </div>
+            </div>
+            
+            <!-- USSD Details -->
+            <div id="quickUssdDetails" class="payment-details" style="display: none;">
+              <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="quickUssdPhone" placeholder="e.g., 254712345678">
+              </div>
+              <p class="payment-instruction">Dial the USSD code to complete your payment.</p>
+            </div>
+            
+            <!-- QR Code Details -->
+            <div id="quickQrDetails" class="payment-details" style="display: none;">
+              <div class="qr-instruction">
+                <p>Scan the QR code with your mobile banking app to complete payment.</p>
+                <div class="qr-placeholder">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100" height="100">
+                    <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm8-2v8h8V3h-8zm6 6h-4V5h4v4zM3 21h8v-8H3v8zm2-6h4v4H5v-4zm13 2h2v2h-2v-2zm2-2h2v2h-2v-2zm-4 4h2v2h-2v-2zm4 2h2v2h-2v-2zm-8 0h2v2h-2v-2zm-2-4h2v2h-2v-2zm4-4h2v2h-2V9z" fill="var(--gray)"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Auto Debit / Standing Order Details -->
+            <div id="quickAutoDebitDetails" class="payment-details" style="display: none;">
+              <div class="form-group">
+                <label>Account Number</label>
+                <input type="text" id="quickAutoDebitAccount" placeholder="Enter account number">
+              </div>
+              <div class="form-group">
+                <label>Bank Name</label>
+                <input type="text" id="quickAutoDebitBank" placeholder="Enter bank name">
+              </div>
+              <p class="payment-instruction">Payment will be automatically deducted on the due date.</p>
+            </div>
+            
+            <div class="payment-confirmation">
+              <p class="confirmation-text">Pay <span id="quickConfirmAmount">ksh0</span></p>
+            </div>
+            
+            <button type="button" class="btn btn-primary" onclick="submitQuickPay()">Confirm Payment</button>
+            <p class="success-message" id="quickPaySuccess"></p>
+            <p class="error-message" id="quickPayError"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Support Modal -->
+  <div id="supportModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 700px;">
+      <div class="modal-header">
+        <h3>💬 Support Center</h3>
+        <button class="modal-close" onclick="closeSupportModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="tabs" style="margin-bottom: 20px;">
+          <button class="tab active" id="supportTabNew" onclick="showSupportTab('new')">Submit Query</button>
+          <button class="tab" id="supportTabMy" onclick="showSupportTab('my')">My Queries</button>
+        </div>
+        
+        <!-- Submit Query Form -->
+        <div id="supportNewTab">
+          <form id="supportQueryForm">
+            <div class="form-group">
+              <label>Category</label>
+              <select id="supportCategory" required>
+                <option value="">Select a category</option>
+                <option value="loan_issue">Loan Issue</option>
+                <option value="payment_issue">Payment Issue</option>
+                <option value="bank_related">Bank Related</option>
+                <option value="account_issue">Account Issue</option>
+                <option value="general">General Question</option>
+                <option value="feedback">Feedback</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Subject</label>
+              <input type="text" id="supportSubject" placeholder="Brief description of your issue" required>
+            </div>
+            <div class="form-group">
+              <label>Message</label>
+              <textarea id="supportMessage" placeholder="Describe your issue in detail..." required style="min-height: 100px;"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Priority</label>
+              <select id="supportPriority">
+                <option value="low">Low - General question</option>
+                <option value="medium" selected>Medium - Issue that needs attention</option>
+                <option value="high">High - Important issue</option>
+                <option value="urgent">Urgent - Critical issue</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Query</button>
+          </form>
+        </div>
+        
+        <!-- My Queries List -->
+        <div id="supportMyTab" style="display: none;">
+          <div id="supportQueriesList"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="app-config.js"></script>
+  <script>
+    // Check authentication
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = 'login.html';
+    }
+
+    // Theme Toggle Functionality
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const moonIcon = document.getElementById('moonIcon');
+      const sunIcon = document.getElementById('sunIcon');
+      const themeText = document.getElementById('themeText');
+      
+      if (currentTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+        moonIcon.style.display = 'block';
+        sunIcon.style.display = 'none';
+        themeText.textContent = 'Dark';
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        moonIcon.style.display = 'none';
+        sunIcon.style.display = 'block';
+        themeText.textContent = 'Light';
+      }
+    }
+
+    // Check for saved theme preference or default to light
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.getElementById('moonIcon').style.display = 'none';
+      document.getElementById('sunIcon').style.display = 'block';
+      document.getElementById('themeText').textContent = 'Light';
+    }
+
+    // Format currency
+    function formatCurrency(amount) {
+      return 'ksh' + new Intl.NumberFormat('en-US').format(amount);
+    }
+
+    // Quick Pay Modal Elements
+    const quickPayModal = document.getElementById('quickPayModal');
+    let selectedLoanId = '';
+    let selectedLoanBalance = 0;
+    let availableLoans = [];
+
+    // Open Quick Pay Modal
+    async function openQuickPayModal() {
+      document.getElementById('quickPaySuccess').textContent = '';
+      document.getElementById('quickPayError').textContent = '';
+      document.getElementById('quickPayAmount').value = '';
+      document.getElementById('quickPayMethod').value = '';
+      document.getElementById('quickConfirmAmount').textContent = 'ksh0';
+      
+      // Hide all payment detail sections
+      document.getElementById('quickMpesaDetails').style.display = 'none';
+      document.getElementById('quickCardDetails').style.display = 'none';
+      document.getElementById('quickPaypalDetails').style.display = 'none';
+      document.getElementById('quickBankDetails').style.display = 'none';
+      document.getElementById('quickUssdDetails').style.display = 'none';
+      document.getElementById('quickQrDetails').style.display = 'none';
+      document.getElementById('quickAutoDebitDetails').style.display = 'none';
+      
+      document.getElementById('quickPayLoading').style.display = 'flex';
+      document.getElementById('quickPayNoLoans').style.display = 'none';
+      document.getElementById('quickPayLoanList').style.display = 'none';
+      document.getElementById('quickPayFormSection').style.display = 'none';
+      
+      quickPayModal.style.display = 'flex';
+      
+      // Fetch loans for quick pay
+      try {
+        const response = await fetch('http://localhost:5000/loans', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          availableLoans = data.loans.filter(loan => loan.status === 'active' && loan.remainingBalance > 0);
+          
+          document.getElementById('quickPayLoading').style.display = 'none';
+          
+          if (availableLoans.length === 0) {
+            document.getElementById('quickPayNoLoans').style.display = 'block';
+          } else {
+            renderLoanSelectList();
+            document.getElementById('quickPayLoanList').style.display = 'block';
+          }
+        }
+      } catch (err) {
+        document.getElementById('quickPayLoading').style.display = 'none';
+        document.getElementById('quickPayError').textContent = 'Failed to load loans';
+      }
+    }
+
+    // Render loan selection list
+    function renderLoanSelectList() {
+      const loanSelectList = document.getElementById('loanSelectList');
+      loanSelectList.innerHTML = availableLoans.map(loan => `
+        <div class="loan-select-item" onclick="selectLoanForPayment('${loan._id}', '${loan.loanName}', ${loan.remainingBalance})" style="padding: 12px; border: 2px solid var(--light-gray); border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.3s ease;">
+          <div style="font-weight: 600; color: var(--dark-gray);">${loan.loanName}</div>
+          <div style="font-size: 13px; color: var(--gray);">Balance: ${formatCurrency(loan.remainingBalance)}</div>
+        </div>
+      `).join('');
+    }
+
+    // Select loan for payment
+    function selectLoanForPayment(loanId, loanName, balance) {
+      selectedLoanId = loanId;
+      selectedLoanBalance = balance;
+      
+      // Hide all payment detail sections when selecting a new loan
+      document.getElementById('quickMpesaDetails').style.display = 'none';
+      document.getElementById('quickCardDetails').style.display = 'none';
+      document.getElementById('quickPaypalDetails').style.display = 'none';
+      document.getElementById('quickBankDetails').style.display = 'none';
+      document.getElementById('quickUssdDetails').style.display = 'none';
+      document.getElementById('quickQrDetails').style.display = 'none';
+      document.getElementById('quickAutoDebitDetails').style.display = 'none';
+      
+      document.getElementById('quickPayFormSection').style.display = 'block';
+      document.getElementById('quickPayAmount').value = '';
+      document.getElementById('quickPayMethod').value = '';
+      document.getElementById('quickConfirmAmount').textContent = 'ksh0';
+      
+      // Highlight selected loan
+      const items = document.querySelectorAll('.loan-select-item');
+      items.forEach(item => {
+        item.style.borderColor = 'var(--light-gray)';
+        item.style.background = 'transparent';
+        if (item.onclick && item.onclick.toString().includes(loanId)) {
+          item.style.borderColor = 'var(--primary-green)';
+          item.style.background = 'rgba(16, 185, 129, 0.1)';
+        }
+      });
+    }
+
+    // Close Quick Pay Modal
+    function closeQuickPayModal() {
+      quickPayModal.style.display = 'none';
+      selectedLoanId = '';
+      selectedLoanBalance = 0;
+    }
+
+    // Toggle Quick Pay Details based on payment method
+    function toggleQuickPayDetails() {
+      const method = document.getElementById('quickPayMethod').value;
+      
+      // Hide all payment detail sections
+      document.getElementById('quickMpesaDetails').style.display = 'none';
+      document.getElementById('quickCardDetails').style.display = 'none';
+      document.getElementById('quickPaypalDetails').style.display = 'none';
+      document.getElementById('quickBankDetails').style.display = 'none';
+      document.getElementById('quickUssdDetails').style.display = 'none';
+      document.getElementById('quickQrDetails').style.display = 'none';
+      document.getElementById('quickAutoDebitDetails').style.display = 'none';
+      
+      // Show relevant details based on selection
+      if (method === 'mpesa') {
+        document.getElementById('quickMpesaDetails').style.display = 'block';
+      } else if (method === 'credit_card' || method === 'debit_card') {
+        document.getElementById('quickCardDetails').style.display = 'block';
+      } else if (method === 'paypal') {
+        document.getElementById('quickPaypalDetails').style.display = 'block';
+      } else if (method === 'bank_transfer') {
+        document.getElementById('quickBankDetails').style.display = 'block';
+      } else if (method === 'ussd') {
+        document.getElementById('quickUssdDetails').style.display = 'block';
+      } else if (method === 'qr_code') {
+        document.getElementById('quickQrDetails').style.display = 'block';
+      } else if (method === 'auto_debit' || method === 'standing_order') {
+        document.getElementById('quickAutoDebitDetails').style.display = 'block';
+      }
+    }
+
+    // Set quick amount
+    function setQuickPayAmount(type) {
+      const amountInput = document.getElementById('quickPayAmount');
+      if (type === 'minimum') {
+        amountInput.value = Math.min(selectedLoanBalance * 0.1, 1000);
+      } else if (type === 'partial') {
+        amountInput.value = Math.round(selectedLoanBalance * 0.25);
+      } else if (type === 'full') {
+        amountInput.value = selectedLoanBalance;
+      }
+      updateQuickConfirmAmount();
+    }
+
+    // Update confirmation amount
+    function updateQuickConfirmAmount() {
+      const amount = document.getElementById('quickPayAmount').value;
+      document.getElementById('quickConfirmAmount').textContent = formatCurrency(amount || 0);
+    }
+
+    // Submit quick payment
+    async function submitQuickPay() {
+      const amount = parseFloat(document.getElementById('quickPayAmount').value);
+      const paymentMethod = document.getElementById('quickPayMethod').value;
+      
+      if (!amount || amount <= 0) {
+        document.getElementById('quickPayError').textContent = 'Please enter a valid amount';
+        return;
+      }
+      
+      if (!paymentMethod) {
+        document.getElementById('quickPayError').textContent = 'Please select a payment method';
+        return;
+      }
+      
+      if (amount > selectedLoanBalance) {
+        document.getElementById('quickPayError').textContent = 'Amount exceeds remaining balance';
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:5000/payments', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            loanId: selectedLoanId,
+            amount: amount,
+            paymentMethod: paymentMethod,
+            notes: 'Quick Pay'
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          document.getElementById('quickPaySuccess').textContent = 'Payment successful!';
+          document.getElementById('quickPayError').textContent = '';
+          setTimeout(() => {
+            closeQuickPayModal();
+            fetchDashboardData();
+          }, 1500);
+        } else {
+          document.getElementById('quickPayError').textContent = data.message || 'Payment failed';
+          document.getElementById('quickPaySuccess').textContent = '';
+        }
+      } catch (err) {
+        document.getElementById('quickPayError').textContent = 'An error occurred. Please try again.';
+        document.getElementById('quickPaySuccess').textContent = '';
+      }
+    }
+
+    // Fetch loans and update dashboard
+    async function fetchDashboardData() {
+      try {
+        const response = await fetch('http://localhost:5000/loans', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          const loans = data.loans;
+          
+          // Calculate stats
+          const totalBalance = loans.reduce((sum, loan) => sum + loan.remainingBalance, 0);
+          const activeLoans = loans.filter(loan => loan.status === 'active').length;
+          const pendingPayments = loans.filter(loan => loan.status === 'overdue').length;
+
+          // Update DOM
+          document.getElementById('totalBalance').textContent = formatCurrency(totalBalance);
+          document.getElementById('activeLoans').textContent = activeLoans;
+          document.getElementById('pendingPayments').textContent = pendingPayments;
+        }
+      } catch (err) {
+        console.error('Error fetching loans:', err);
+      }
+    }
+
+    // Initial load
+    fetchDashboardData();
+
+    // ==========================================
+    // SUPPORT MODAL FUNCTIONS
+    // ==========================================
+    
+    const supportModal = document.getElementById('supportModal');
+    
+    function openSupportModal() {
+      supportModal.style.display = 'flex';
+      showSupportTab('new');
+    }
+    
+    function closeSupportModal() {
+      supportModal.style.display = 'none';
+    }
+    
+    function showSupportTab(tab) {
+      if (tab === 'new') {
+        document.getElementById('supportTabNew').classList.add('active');
+        document.getElementById('supportTabMy').classList.remove('active');
+        document.getElementById('supportNewTab').style.display = 'block';
+        document.getElementById('supportMyTab').style.display = 'none';
+      } else {
+        document.getElementById('supportTabNew').classList.remove('active');
+        document.getElementById('supportTabMy').classList.add('active');
+        document.getElementById('supportNewTab').style.display = 'none';
+        document.getElementById('supportMyTab').style.display = 'block';
+        loadMyQueries();
+      }
+    }
+    
+    // Submit support query
+    document.getElementById('supportQueryForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const category = document.getElementById('supportCategory').value;
+      const subject = document.getElementById('supportSubject').value;
+      const message = document.getElementById('supportMessage').value;
+      const priority = document.getElementById('supportPriority').value;
+
+      try {
+        const response = await fetch('http://localhost:5000/queries', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ category, subject, message, priority })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          alert('Query submitted successfully! We will respond soon.');
+          document.getElementById('supportQueryForm').reset();
+          showSupportTab('my');
+        } else {
+          alert(data.message || 'Failed to submit query');
+        }
+      } catch (err) {
+        alert('An error occurred. Please try again.');
+      }
+    });
+    
+    // Load my queries
+    async function loadMyQueries() {
+      try {
+        const response = await fetch('http://localhost:5000/queries', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        
+        const container = document.getElementById('supportQueriesList');
+        
+        if (!data.queries || data.queries.length === 0) {
+          container.innerHTML = '<div class="empty-state" style="padding: 40px; text-align: center;"><p style="color: #999;">No queries yet. Submit your first query!</p></div>';
+          return;
+        }
+        
+        container.innerHTML = data.queries.map(query => `
+          <div style="background: #f9f9f9; padding: 16px; border-radius: 8px; margin-bottom: 12px; border-left: 4px solid ${query.status === 'resolved' ? '#4CAF50' : query.status === 'open' ? '#ff9800' : '#2196F3'};">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <strong>${query.subject}</strong>
+              <span style="padding: 4px 10px; border-radius: 12px; font-size: 12px; background: ${query.status === 'resolved' ? '#e8f5e9' : query.status === 'open' ? '#fff3e0' : '#e3f2fd'}; color: ${query.status === 'resolved' ? '#2e7d32' : query.status === 'open' ? '#ef6c00' : '#1565c0'};">${query.status.replace('_', ' ')}</span>
+            </div>
+            <div style="font-size: 12px; color: #666; margin-bottom: 8px;">
+              ${query.category.replace('_', ' ')} • ${new Date(query.createdAt).toLocaleDateString()}
+            </div>
+            <p style="color: #555; font-size: 14px; margin-bottom: 8px;">${query.message}</p>
+            ${query.adminResponse ? `
+              <div style="background: #e8f5e9; padding: 12px; border-radius: 6px; margin-top: 12px; border-left: 3px solid #4CAF50;">
+                <strong style="color: #2e7d32;">📩 Admin Response:</strong>
+                <p style="color: #333; margin-top: 4px;">${query.adminResponse.message}</p>
+              </div>
+            ` : ''}
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Error loading queries:', err);
+      }
+    }
+    
+    // Update Support card click to open modal
+    const supportCard = Array.from(document.querySelectorAll('.feature-card')).find(card => card.querySelector('h3')?.textContent === 'Support');
+    if (supportCard) {
+      supportCard.onclick = function() { openSupportModal(); };
+      supportCard.style.cursor = 'pointer';
+    }
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      if (event.target === quickPayModal) {
+        closeQuickPayModal();
+      }
+      if (event.target === supportModal) {
+        closeSupportModal();
+      }
+    }
+  </script>
+</body>
+</html>
+
