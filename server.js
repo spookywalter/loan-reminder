@@ -92,13 +92,38 @@ app.use((req, res, next) => {
   next();
 });
 
-// MongoDB connection with retry
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/loanReminder')
-  .then(() => console.log('✅ MongoDB Connected'))
-  .catch(err => {
-    console.error('❌ MongoDB Error:', err.message);
-    process.exit(1);
-  });
+const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/loanReminder';
+let mongoConnectionPromise;
+
+async function ensureDatabaseConnection() {
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+
+  if (!mongoConnectionPromise) {
+    mongoConnectionPromise = mongoose.connect(mongoUri)
+      .then(connection => {
+        console.log('MongoDB Connected');
+        return connection;
+      })
+      .catch(err => {
+        mongoConnectionPromise = null;
+        console.error('MongoDB Error:', err.message);
+        throw err;
+      });
+  }
+
+  return mongoConnectionPromise;
+}
+
+app.use(async (req, res, next) => {
+  try {
+    await ensureDatabaseConnection();
+    next();
+  } catch (err) {
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
 
 // SCHEMAS - with validation
 const userSchema = new mongoose.Schema({
