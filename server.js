@@ -1,7 +1,6 @@
 require('dotenv').config();
 
 const express = require('express');
-const path = require('path');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -33,7 +32,6 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 const ADMIN_SECRET_KEY = process.env.ADMIN_SECRET_KEY || crypto.randomBytes(32).toString('hex');
-const frontendPath = path.join(__dirname, 'public');
 const allowedOrigins = new Set([
   'http://localhost:5500',
   'http://127.0.0.1:5500',
@@ -929,20 +927,6 @@ cron.schedule('0 0 * * *', async () => {
   }
 });
 }
-
-app.use(express.static(frontendPath));
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
-});
-
-app.get(/^\/(?!api\/).*/, (req, res, next) => {
-  if (req.method !== 'GET') {
-    return next();
-  }
-
-  res.sendFile(path.join(frontendPath, 'index.html'));
-});
 
 // 404 handler
 app.use((req, res) => {
