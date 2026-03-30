@@ -113,7 +113,10 @@ app.use((req, res, next) => {
   next();
 });
 
-const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/loanReminder';
+const mongoUri =
+  process.env.MONGO_URI ||
+  process.env.MONGODB_URI ||
+  'mongodb://127.0.0.1:27017/loanReminder';
 let mongoConnectionPromise;
 
 function normalizePhoneNumber(phoneNumber) {
