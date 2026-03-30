@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - Loan Reminder</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --bg-primary: #f8fafc;
+      --bg-secondary: rgba(255, 255, 255, 0.9);
+      --surface-solid: #ffffff;
+      --text-primary: #111827;
+      --text-secondary: #4b5563;
+      --border-color: rgba(229, 231, 235, 0.8);
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --white: #ffffff;
+      --danger: #ef4444;
+      --success: #10b981;
+      --radius: 14px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-secondary: rgba(17, 24, 39, 0.92);
+      --surface-solid: #111827;
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --border-color: rgba(71, 85, 105, 0.9);
+      --gray-50: #1e293b;
+      --gray-100: #334155;
+      --gray-200: #475569;
+      --gray-600: #cbd5e1;
+      --gray-700: #e2e8f0;
+      --gray-800: #f8fafc;
+      --gray-900: #f8fafc;
+      --white: #111827;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.3);
+      --shadow: 0 18px 40px rgba(2, 6, 23, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(16, 185, 129, 0.18), transparent 30%),
+        linear-gradient(180deg, var(--bg-primary) 0%, #0f766e14 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .page-shell {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .page-title h1 {
+      font-size: 2rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .page-title p {
+      color: var(--text-secondary);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: var(--radius);
+      padding: 0.9rem 1.2rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: var(--surface-solid);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-color);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .profile-panel {
+      padding: 1.5rem;
+      align-self: start;
+      position: sticky;
+      top: 1rem;
+    }
+
+    .avatar {
+      width: 84px;
+      height: 84px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, var(--primary), #34d399);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .profile-panel h2 {
+      font-size: 1.35rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .profile-panel p {
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+      word-break: break-word;
+    }
+
+    .summary-item {
+      padding: 0.85rem 0;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .summary-label {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+      font-weight: 700;
+    }
+
+    .summary-value {
+      font-weight: 600;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    .form-panel {
+      padding: 1.75rem;
+    }
+
+    .panel-heading {
+      margin-bottom: 1.25rem;
+    }
+
+    .panel-heading h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .panel-heading p {
+      color: var(--text-secondary);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.45rem;
+      font-size: 0.92rem;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border: 2px solid var(--border-color);
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: var(--surface-solid);
+      color: var(--text-primary);
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+    }
+
+    input:disabled {
+      background: var(--gray-50);
+      color: var(--text-secondary);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .field-help {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      margin-top: 0.35rem;
+    }
+
+    .status-message {
+      display: none;
+      margin: 1rem 0 0;
+      padding: 0.9rem 1rem;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .status-message.success {
+      display: block;
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-message.error {
+      display: block;
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-panel {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .page-header {
+        align-items: stretch;
+      }
+
+      .header-actions {
+        width: 100%;
+      }
+
+      .header-actions .btn {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <div class="page-header">
+      <div class="page-title">
+        <h1>My Profile</h1>
+        <p>Update your contact information and personal details for reminders and account management.</p>
+      </div>
+      <div class="header-actions">
+        <a class="btn btn-secondary" href="dashboard-new.html">Back to Dashboard</a>
+        <button class="btn btn-primary" type="submit" form="profileForm">Save Changes</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside class="card profile-panel">
+        <div class="avatar" id="profileAvatar">U</div>
+        <h2 id="profileCardName">Loading...</h2>
+        <p id="profileCardEmail">Please wait...</p>
+
+        <div class="summary-item">
+          <span class="summary-label">Phone</span>
+          <span class="summary-value" id="profileCardPhone">Not set</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Location</span>
+          <span class="summary-value" id="profileCardLocation">Not set</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Occupation</span>
+          <span class="summary-value" id="profileCardOccupation">Not set</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Member Since</span>
+          <span class="summary-value" id="profileCardCreatedAt">Loading...</span>
+        </div>
+      </aside>
+
+      <main class="card form-panel">
+        <div class="panel-heading">
+          <h3>Personal Details</h3>
+          <p>Keep these details current so email and SMS notifications reach you correctly.</p>
+        </div>
+
+        <form id="profileForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="profileUsername">Username</label>
+              <input type="text" id="profileUsername" disabled>
+              <div class="field-help">Your username is read-only for now.</div>
+            </div>
+
+            <div class="form-group">
+              <label for="profileFullName">Full Name</label>
+              <input type="text" id="profileFullName" maxlength="100" placeholder="Your full name">
+            </div>
+
+            <div class="form-group">
+              <label for="profileEmail">Email Address</label>
+              <input type="email" id="profileEmail" required placeholder="your@email.com">
+            </div>
+
+            <div class="form-group">
+              <label for="profilePhone">Phone Number</label>
+              <input type="tel" id="profilePhone" placeholder="e.g. 0712345678 or +254712345678">
+            </div>
+
+            <div class="form-group">
+              <label for="profileDateOfBirth">Date of Birth</label>
+              <input type="date" id="profileDateOfBirth">
+            </div>
+
+            <div class="form-group">
+              <label for="profileOccupation">Occupation</label>
+              <input type="text" id="profileOccupation" maxlength="100" placeholder="What do you do?">
+            </div>
+
+            <div class="form-group full">
+              <label for="profileLocation">Location</label>
+              <input type="text" id="profileLocation" maxlength="100" placeholder="City, town, or area">
+            </div>
+
+            <div class="form-group full">
+              <label for="profileBio">Personal Notes</label>
+              <textarea id="profileBio" maxlength="500" placeholder="Anything small you'd like to keep in your profile"></textarea>
+            </div>
+
+            <div class="form-group full">
+              <label for="profileCreatedAt">Member Since</label>
+              <input type="text" id="profileCreatedAt" disabled>
+            </div>
+          </div>
+
+          <div id="profileStatus" class="status-message"></div>
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <script src="app-config.js"></script>
+  <script>
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = 'login.html';
+    }
+
+    function setStatus(message, type) {
+      const status = document.getElementById('profileStatus');
+      status.textContent = message;
+      status.className = `status-message ${type}`;
+    }
+
+    function formatDate(value) {
+      return value ? new Date(value).toLocaleDateString() : 'Not set';
+    }
+
+    function populateProfile(profile) {
+      document.getElementById('profileUsername').value = profile.username || '';
+      document.getElementById('profileFullName').value = profile.fullName || '';
+      document.getElementById('profileEmail').value = profile.email || '';
+      document.getElementById('profilePhone').value = profile.phoneNumber || '';
+      document.getElementById('profileDateOfBirth').value = profile.dateOfBirth ? new Date(profile.dateOfBirth).toISOString().split('T')[0] : '';
+      document.getElementById('profileOccupation').value = profile.occupation || '';
+      document.getElementById('profileLocation').value = profile.location || '';
+      document.getElementById('profileBio').value = profile.bio || '';
+      document.getElementById('profileCreatedAt').value = formatDate(profile.createdAt);
+
+      document.getElementById('profileCardName').textContent = profile.fullName || profile.username || 'User';
+      document.getElementById('profileCardEmail').textContent = profile.email || 'No email set';
+      document.getElementById('profileCardPhone').textContent = profile.phoneNumber || 'Not set';
+      document.getElementById('profileCardLocation').textContent = profile.location || 'Not set';
+      document.getElementById('profileCardOccupation').textContent = profile.occupation || 'Not set';
+      document.getElementById('profileCardCreatedAt').textContent = formatDate(profile.createdAt);
+
+      const avatarSource = (profile.fullName || profile.username || 'U').trim().charAt(0).toUpperCase();
+      document.getElementById('profileAvatar').textContent = avatarSource || 'U';
+    }
+
+    async function loadProfile() {
+      try {
+        const response = await fetch('http://localhost:5000/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (response.ok && data.user) {
+          populateProfile(data.user);
+        } else {
+          setStatus(data.error || 'Failed to load profile.', 'error');
+        }
+      } catch (error) {
+        console.error('Profile load error:', error);
+        setStatus('Network error while loading profile.', 'error');
+      }
+    }
+
+    document.getElementById('profileForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const payload = {
+        email: document.getElementById('profileEmail').value.trim(),
+        phoneNumber: document.getElementById('profilePhone').value.trim(),
+        fullName: document.getElementById('profileFullName').value.trim(),
+        dateOfBirth: document.getElementById('profileDateOfBirth').value,
+        occupation: document.getElementById('profileOccupation').value.trim(),
+        location: document.getElementById('profileLocation').value.trim(),
+        bio: document.getElementById('profileBio').value.trim()
+      };
+
+      try {
+        const response = await fetch('http://localhost:5000/profile', {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (response.ok && data.user) {
+          populateProfile(data.user);
+          setStatus('Profile updated successfully.', 'success');
+        } else {
+          setStatus(data.error || 'Failed to update profile.', 'error');
+        }
+      } catch (error) {
+        console.error('Profile update error:', error);
+        setStatus('Network error while saving profile.', 'error');
+      }
+    });
+
+    loadProfile();
+  </script>
+</body>
+</html>

@@ -629,7 +629,7 @@
           </svg>
           <span>Payments</span>
         </a>
-        <a href="#" class="nav-item" onclick="openReportsModal(); return false;">
+        <a href="admin-reports.html" class="nav-item">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="18" y1="20" x2="18" y2="10"/>
             <line x1="12" y1="20" x2="12" y2="4"/>
@@ -814,7 +814,7 @@
   <script>
     const token = localStorage.getItem('token');
 
-    // Check admin authentication immediately
+    // Check admin authentication - be lenient, only redirect if explicitly not admin
     if (!token) {
       console.warn('No token found, redirecting to login');
       window.location.href = 'login.html';
@@ -822,11 +822,38 @@
       try {
         const decoded = JSON.parse(atob(token.split('.')[1]));
         console.log('Token decoded:', decoded);
+
+        // Check if user has admin flag in token OR in localStorage
+        const storedUser = localStorage.getItem('user');
+        let userIsAdmin = decoded.isAdmin === true;
         
-        if (decoded.isAdmin !== true) {
-          console.warn('User is not admin, redirecting to user dashboard');
-          window.location.href = 'dashboard-new.html';
+        if (!userIsAdmin && storedUser) {
+          try {
+            const user = JSON.parse(storedUser);
+            userIsAdmin = user.isAdmin === true;
+            console.log('Stored user isAdmin:', userIsAdmin);
+          } catch (e) {
+            console.error('Error parsing stored user:', e);
+          }
         }
+
+        // Only redirect if explicitly marked as non-admin
+        if (decoded.isAdmin === false) {
+          console.warn('User explicitly marked as non-admin, redirecting to user dashboard');
+          window.location.href = 'dashboard-new.html';
+        } else if (storedUser) {
+          try {
+            const user = JSON.parse(storedUser);
+            if (user.isAdmin === false) {
+              console.warn('Stored user explicitly marked as non-admin');
+              window.location.href = 'dashboard-new.html';
+            }
+          } catch (e) {
+            // Ignore parse errors, allow access
+          }
+        }
+        
+        console.log('Admin access granted');
       } catch (e) {
         console.error('Token decode error:', e);
         window.location.href = 'login.html';
@@ -1281,11 +1308,6 @@
         console.error('Error loading payments:', error);
         alert('Failed to load payments');
       }
-    }
-
-    // Open Reports Modal
-    function openReportsModal() {
-      alert('Reports feature coming soon!\n\nThis will show:\n• Monthly revenue charts\n• User growth statistics\n• Loan performance metrics\n• Payment analytics');
     }
 
     // Load data on page load

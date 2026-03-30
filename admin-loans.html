@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Loans - Admin Dashboard</title>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --white: #ffffff;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --border-color: #e5e7eb;
+    }
+
+    [data-theme="dark"] {
+      --gray-50: #1a1a2e;
+      --gray-100: #16213e;
+      --gray-200: #1f2937;
+      --gray-600: #9ca3af;
+      --gray-700: #d1d5db;
+      --gray-800: #e5e7eb;
+      --gray-900: #f9fafb;
+      --white: #0f172a;
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --border-color: #374151;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    .page-header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 1.5rem 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.18);
+      color: white;
+    }
+
+    .btn-secondary:hover { background: rgba(255, 255, 255, 0.28); }
+
+    .main-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card, .loans-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-card {
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .stat-value {
+      display: block;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.92rem;
+    }
+
+    th {
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--gray-50);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .status-active { background: #dcfce7; color: #166534; }
+    .status-paid { background: #dbeafe; color: #1d4ed8; }
+    .status-overdue { background: #fee2e2; color: #991b1b; }
+
+    .empty-state {
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .main-content { padding: 1rem; }
+      .header-content { align-items: stretch; }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <div class="header-content">
+      <div>
+        <h1>Manage Loans</h1>
+        <p>View all user loans without leaving the admin area.</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="toggleTheme()">Theme</button>
+        <a class="btn btn-secondary" href="admin-dashboard.html">Back to Admin Dashboard</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section class="stats-row">
+      <div class="stat-card">
+        <span class="stat-value" id="totalLoans">0</span>
+        <span class="stat-label">Total Loans</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="activeLoans">0</span>
+        <span class="stat-label">Active</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="overdueLoans">0</span>
+        <span class="stat-label">Overdue</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-value" id="loanValue">KSh 0</span>
+        <span class="stat-label">Loan Value</span>
+      </div>
+    </section>
+
+    <section class="loans-card">
+      <div class="card-header">
+        <h2>All Loans</h2>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Borrower</th>
+              <th>Loan</th>
+              <th>Bank</th>
+              <th>Amount</th>
+              <th>Balance</th>
+              <th>Due Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="loansTableBody">
+            <tr><td colspan="7" class="empty-state">Loading loans...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = 'login.html';
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+
+    function formatCurrency(value) {
+      return `KSh ${Number(value || 0).toLocaleString()}`;
+    }
+
+    function formatDate(value) {
+      return value ? new Date(value).toLocaleDateString() : 'N/A';
+    }
+
+    function getStatusClass(status) {
+      if (status === 'paid') return 'status-paid';
+      if (status === 'overdue') return 'status-overdue';
+      return 'status-active';
+    }
+
+    async function loadLoans() {
+      try {
+        const decoded = JSON.parse(atob(token.split('.')[1]));
+        if (!decoded.isAdmin) {
+          alert('Admin access required.');
+          window.location.href = 'admin-dashboard.html';
+          return;
+        }
+
+        const response = await fetch('http://localhost:5000/admin/all-loans', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to load loans');
+        }
+
+        const loans = data.loans || [];
+        document.getElementById('totalLoans').textContent = loans.length;
+        document.getElementById('activeLoans').textContent = loans.filter(loan => loan.status === 'active').length;
+        document.getElementById('overdueLoans').textContent = loans.filter(loan => loan.status === 'overdue').length;
+        document.getElementById('loanValue').textContent = formatCurrency(loans.reduce((sum, loan) => sum + (loan.loanAmount || 0), 0));
+
+        const tbody = document.getElementById('loansTableBody');
+        if (!loans.length) {
+          tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No loans found.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = loans.map(loan => `
+          <tr>
+            <td>${loan.userId?.username || 'Unknown'}<br><span style="color: var(--text-secondary); font-size: 0.8rem;">${loan.userId?.email || 'No email'}</span></td>
+            <td>${loan.loanName || 'Unnamed loan'}</td>
+            <td>${loan.bankName || 'N/A'}</td>
+            <td>${formatCurrency(loan.loanAmount)}</td>
+            <td>${formatCurrency(loan.remainingBalance)}</td>
+            <td>${formatDate(loan.dueDate)}</td>
+            <td><span class="status-badge ${getStatusClass(loan.status)}">${loan.status || 'active'}</span></td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Load loans error:', error);
+        document.getElementById('loansTableBody').innerHTML = `<tr><td colspan="7" class="empty-state">${error.message}</td></tr>`;
+      }
+    }
+
+    loadLoans();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports - Admin Panel</title>
+  <script src="app-config.js"></script>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --primary-light: #34d399;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --white: #ffffff;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 12px;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --border-color: #e5e7eb;
+    }
+
+    [data-theme="dark"] {
+      --gray-50: #1a1a2e;
+      --gray-100: #16213e;
+      --gray-200: #1f2937;
+      --gray-300: #374151;
+      --gray-600: #9ca3af;
+      --gray-700: #d1d5db;
+      --gray-800: #e5e7eb;
+      --gray-900: #f9fafb;
+      --white: #0f172a;
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --border-color: #374151;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .admin-container {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+
+    .admin-sidebar {
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .sidebar-header {
+      padding: 2rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--white);
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+      padding: 1rem 0;
+      flex: 1;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 1rem 1.5rem;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--white);
+    }
+
+    .nav-item.active {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--white);
+      border-left-color: var(--primary);
+    }
+
+    .nav-item svg {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 1rem 1.5rem;
+      width: 100%;
+      background: rgba(239, 68, 68, 0.15);
+      border: none;
+      border-radius: var(--radius);
+      color: var(--danger);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9375rem;
+      font-weight: 500;
+    }
+
+    .logout-btn:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .admin-main {
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .admin-main-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .admin-main-header h1 {
+      font-size: 1.875rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .header-subtitle {
+      color: var(--gray-600);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.875rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .btn-secondary {
+      background: var(--white);
+      color: var(--gray-700);
+      border: 1px solid var(--gray-300);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gray-50);
+      border-color: var(--gray-600);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-secondary);
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      transition: all 0.2s, background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .stat-icon.revenue { background: #ede9fe; }
+    .stat-icon.loans { background: #dcfce7; }
+    .stat-icon.users { background: #dbeafe; }
+    .stat-icon.payments { background: #fef3c7; }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--gray-900);
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      color: var(--gray-600);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .stat-change {
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      margin-top: 0.5rem;
+    }
+
+    .stat-change.positive { color: var(--success); }
+    .stat-change.negative { color: var(--danger); }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border-radius: 16px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-header h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--gray-800);
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+    }
+
+    .chart-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--gray-600);
+    }
+
+    .chart-bar-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .chart-bar-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    .chart-bar {
+      flex: 1;
+      background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+      border-radius: 6px 6px 0 0;
+      min-height: 20px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .chart-bar:hover {
+      opacity: 0.8;
+    }
+
+    .chart-bar-label {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--gray-600);
+      margin-top: 0.5rem;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--gray-700);
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--gray-50);
+    }
+
+    th {
+      padding: 0.875rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--gray-600);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 0.875rem;
+      color: var(--gray-700);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: var(--gray-50);
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .filter-group label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--gray-700);
+    }
+
+    .filter-group select,
+    .filter-group input {
+      padding: 0.625rem 0.875rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius);
+      background: var(--white);
+      color: var(--gray-700);
+      font-size: 0.875rem;
+      min-width: 150px;
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      color: var(--gray-600);
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--gray-200);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 1024px) {
+      .admin-container {
+        grid-template-columns: 1fr;
+      }
+
+      .admin-sidebar {
+        height: auto;
+        position: relative;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .admin-main {
+        padding: 1rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-actions {
+        width: 100%;
+      }
+
+      .btn {
+        flex: 1;
+        justify-content: center;
+      }
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--gray-200);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .metric-row:last-child {
+      border-bottom: none;
+    }
+
+    .metric-label {
+      font-size: 0.875rem;
+      color: var(--gray-700);
+    }
+
+    .metric-value {
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <aside class="admin-sidebar">
+      <div class="sidebar-header">
+        <h2>
+          <div class="logo-icon">💰</div>
+          Admin Panel
+        </h2>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="admin-dashboard.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" onclick="openUsersModal(); return false;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          <span>Users</span>
+        </a>
+        <a href="admin-loans.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+          </svg>
+          <span>Loans</span>
+        </a>
+        <a href="admin-payments.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          <span>Payments</span>
+        </a>
+        <a href="admin-reports.html" class="nav-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          <span>Reports</span>
+        </a>
+        <a href="admin-queries.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+          </svg>
+          <span>Support Queries</span>
+        </a>
+        <a href="#" class="nav-item" onclick="openInboxModal(); return false;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          <span>Messages</span>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="logout()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Logout
+        </button>
+      </div>
+    </aside>
+
+    <main class="admin-main">
+      <header class="admin-main-header">
+        <div>
+          <h1>Analytics & Reports</h1>
+          <p class="header-subtitle">Comprehensive insights into your loan business performance</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary" onclick="toggleTheme()">
+            <span id="themeText">Dark Mode</span>
+          </button>
+          <button class="btn btn-primary" onclick="exportReport()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Export PDF
+          </button>
+        </div>
+      </header>
+
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label for="dateRange">Date Range</label>
+          <select id="dateRange" onchange="loadReports()">
+            <option value="7">Last 7 Days</option>
+            <option value="30" selected>Last 30 Days</option>
+            <option value="90">Last 90 Days</option>
+            <option value="365">Last Year</option>
+            <option value="custom">Custom Range</option>
+          </select>
+        </div>
+        <div class="filter-group" id="customDateRange" style="display: none;">
+          <label for="startDate">Start Date</label>
+          <input type="date" id="startDate">
+        </div>
+        <div class="filter-group" id="customDateRangeEnd" style="display: none;">
+          <label for="endDate">End Date</label>
+          <input type="date" id="endDate">
+        </div>
+        <div class="filter-group">
+          <label for="reportType">Report Type</label>
+          <select id="reportType" onchange="loadReports()">
+            <option value="all">All Reports</option>
+            <option value="revenue">Revenue</option>
+            <option value="loans">Loans</option>
+            <option value="users">Users</option>
+            <option value="payments">Payments</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div>
+              <span class="stat-number" id="totalRevenue">KSh 0</span>
+              <span class="stat-label">Total Revenue</span>
+            </div>
+            <div class="stat-icon revenue">💵</div>
+          </div>
+          <div class="stat-change positive" id="revenueChange">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+              <polyline points="17 6 23 6 23 12"/>
+            </svg>
+            <span>+12.5%</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div>
+              <span class="stat-number" id="totalLoans">0</span>
+              <span class="stat-label">Total Loans</span>
+            </div>
+            <div class="stat-icon loans">📋</div>
+          </div>
+          <div class="stat-change positive" id="loansChange">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+              <polyline points="17 6 23 6 23 12"/>
+            </svg>
+            <span>+8.2%</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div>
+              <span class="stat-number" id="totalUsers">0</span>
+              <span class="stat-label">Active Users</span>
+            </div>
+            <div class="stat-icon users">👥</div>
+          </div>
+          <div class="stat-change positive" id="usersChange">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+              <polyline points="17 6 23 6 23 12"/>
+            </svg>
+            <span>+15.3%</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-header">
+            <div>
+              <span class="stat-number" id="totalPayments">0</span>
+              <span class="stat-label">Total Payments</span>
+            </div>
+            <div class="stat-icon payments">💳</div>
+          </div>
+          <div class="stat-change negative" id="paymentsChange">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/>
+              <polyline points="17 18 23 18 23 12"/>
+            </svg>
+            <span>-3.1%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <div class="card">
+          <div class="card-header">
+            <h2>Revenue Overview</h2>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" id="revenueChart">
+              <div class="chart-bar-container" id="revenueBars"></div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <div class="legend-color" style="background: var(--primary);"></div>
+                <span>Revenue (KSh)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Loan Performance</h2>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" id="loanChart">
+              <div class="chart-bar-container" id="loanBars"></div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <div class="legend-color" style="background: #3b82f6;"></div>
+                <span>Active</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color" style="background: #10b981;"></div>
+                <span>Completed</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color" style="background: #ef4444;"></div>
+                <span>Defaulted</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Payment Analytics</h2>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" id="paymentChart">
+              <div class="chart-bar-container" id="paymentBars"></div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <div class="legend-color" style="background: #f59e0b;"></div>
+                <span>Pending</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-color" style="background: #10b981;"></div>
+                <span>Completed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2>User Growth</h2>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" id="userChart">
+              <div class="chart-bar-container" id="userBars"></div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item">
+                <div class="legend-color" style="background: #8b5cf6;"></div>
+                <span>New Users</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Top Performing Loans</h2>
+        </div>
+        <div class="card-body">
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Borrower</th>
+                  <th>Amount</th>
+                  <th>Interest</th>
+                  <th>Status</th>
+                  <th>Progress</th>
+                  <th>Due Date</th>
+                </tr>
+              </thead>
+              <tbody id="topLoansTable">
+                <tr>
+                  <td colspan="6" class="loading">
+                    <div class="loading-spinner"></div>
+                    <span style="margin-left: 1rem;">Loading data...</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 1.5rem;">
+        <div class="card-header">
+          <h2>Monthly Summary</h2>
+        </div>
+        <div class="card-body">
+          <div id="monthlyMetrics">
+            <div class="metric-row">
+              <span class="metric-label">Total Disbursed</span>
+              <span class="metric-value" id="totalDisbursed">KSh 0</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Total Collected</span>
+              <span class="metric-value" id="totalCollected">KSh 0</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Outstanding Balance</span>
+              <span class="metric-value" id="outstandingBalance">KSh 0</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Average Loan Size</span>
+              <span class="metric-value" id="avgLoanSize">KSh 0</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Repayment Rate</span>
+              <span class="metric-value" id="repaymentRate">0%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Ensure API_BASE_URL is defined
+    if (typeof API_BASE_URL === 'undefined') {
+      window.API_BASE_URL = window.location.origin || 'http://localhost:5000';
+    }
+
+    let token = localStorage.getItem('token');
+    let currentUser = null;
+
+    // Load reports data immediately on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadReports();
+    });
+
+    function logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = 'index.html';
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      document.getElementById('themeText').textContent = isDark ? 'Dark Mode' : 'Light Mode';
+      localStorage.setItem('theme', isDark ? 'light' : 'dark');
+    }
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.getElementById('themeText').textContent = savedTheme === 'dark' ? 'Light Mode' : 'Dark Mode';
+
+    // Date range filter handler
+    const dateRangeSelect = document.getElementById('dateRange');
+    if (dateRangeSelect) {
+      dateRangeSelect.addEventListener('change', function() {
+        const customStart = document.getElementById('customDateRange');
+        const customEnd = document.getElementById('customDateRangeEnd');
+        if (this.value === 'custom') {
+          if (customStart) customStart.style.display = 'flex';
+          if (customEnd) customEnd.style.display = 'flex';
+        } else {
+          if (customStart) customStart.style.display = 'none';
+          if (customEnd) customEnd.style.display = 'none';
+        }
+      });
+    }
+
+    async function loadReports() {
+      try {
+        const dateRangeEl = document.getElementById('dateRange');
+        const reportTypeEl = document.getElementById('reportType');
+        
+        if (!dateRangeEl || !reportTypeEl) {
+          console.error('Filter elements not found');
+          loadMockData();
+          return;
+        }
+
+        const dateRange = dateRangeEl.value;
+        const reportType = reportTypeEl.value;
+
+        let startDate, endDate;
+        const now = new Date();
+
+        if (dateRange === 'custom') {
+          const startDateEl = document.getElementById('startDate');
+          const endDateEl = document.getElementById('endDate');
+          startDate = startDateEl?.value;
+          endDate = endDateEl?.value;
+          if (!startDate || !endDate) {
+            startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate()).toISOString();
+            endDate = now.toISOString();
+          } else {
+            startDate = new Date(startDate).toISOString();
+            endDate = new Date(endDate).toISOString();
+          }
+        } else {
+          const days = parseInt(dateRange);
+          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - days).toISOString();
+          endDate = now.toISOString();
+        }
+
+        // Load all report data in parallel
+        await Promise.all([
+          loadRevenueReport(startDate, endDate),
+          loadLoanReport(startDate, endDate),
+          loadPaymentReport(startDate, endDate),
+          loadUserReport(startDate, endDate),
+          loadTopLoans(),
+          loadMonthlyMetrics()
+        ]);
+
+      } catch (err) {
+        console.error('Error loading reports:', err);
+        loadMockData();
+      }
+    }
+
+    function loadMockData() {
+      renderMockRevenueChart();
+      renderMockLoanChart();
+      renderMockPaymentChart();
+      renderMockUserChart();
+      renderMockTopLoans();
+      renderMockMonthlyMetrics();
+    }
+
+    async function loadRevenueReport(startDate, endDate) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        const response = await fetch(`${API_BASE_URL}/api/admin/reports/revenue?startDate=${startDate}&endDate=${endDate}`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) throw new Error('Failed to load revenue data');
+
+        const data = await response.json();
+        document.getElementById('totalRevenue').textContent = formatCurrency(data.totalRevenue || 0);
+
+        // Render revenue chart
+        renderBarChart('revenueBars', data.monthlyData || [], 'revenue');
+      } catch (err) {
+        console.error('Revenue report error:', err);
+        // Use mock data if API fails
+        renderMockRevenueChart();
+      }
+    }
+
+    async function loadLoanReport(startDate, endDate) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        const response = await fetch(`${API_BASE_URL}/api/admin/reports/loans?startDate=${startDate}&endDate=${endDate}`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) throw new Error('Failed to load loan data');
+
+        const data = await response.json();
+        document.getElementById('totalLoans').textContent = data.totalLoans || 0;
+
+        // Render loan chart
+        renderBarChart('loanBars', data.statusData || [], 'loan');
+      } catch (err) {
+        console.error('Loan report error:', err);
+        renderMockLoanChart();
+      }
+    }
+
+    async function loadPaymentReport(startDate, endDate) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        const response = await fetch(`${API_BASE_URL}/api/admin/reports/payments?startDate=${startDate}&endDate=${endDate}`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) throw new Error('Failed to load payment data');
+
+        const data = await response.json();
+        document.getElementById('totalPayments').textContent = data.totalPayments || 0;
+
+        // Render payment chart
+        renderBarChart('paymentBars', data.statusData || [], 'payment');
+      } catch (err) {
+        console.error('Payment report error:', err);
+        renderMockPaymentChart();
+      }
+    }
+
+    async function loadUserReport(startDate, endDate) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        const response = await fetch(`${API_BASE_URL}/api/admin/reports/users?startDate=${startDate}&endDate=${endDate}`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) throw new Error('Failed to load user data');
+
+        const data = await response.json();
+        document.getElementById('totalUsers').textContent = data.totalUsers || 0;
+
+        // Render user chart
+        renderBarChart('userBars', data.monthlyData || [], 'user');
+      } catch (err) {
+        console.error('User report error:', err);
+        renderMockUserChart();
+      }
+    }
+
+    async function loadTopLoans() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        const response = await fetch(`${API_BASE_URL}/api/admin/reports/top-loans`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) throw new Error('Failed to load top loans');
+
+        const data = await response.json();
+        renderTopLoans(data.loans || []);
+      } catch (err) {
+        console.error('Top loans error:', err);
+        renderMockTopLoans();
+      }
+    }
+
+    async function loadMonthlyMetrics() {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        const response = await fetch(`${API_BASE_URL}/api/admin/reports/monthly-metrics`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) throw new Error('Failed to load monthly metrics');
+
+        const data = await response.json();
+        document.getElementById('totalDisbursed').textContent = formatCurrency(data.totalDisbursed || 0);
+        document.getElementById('totalCollected').textContent = formatCurrency(data.totalCollected || 0);
+        document.getElementById('outstandingBalance').textContent = formatCurrency(data.outstandingBalance || 0);
+        document.getElementById('avgLoanSize').textContent = formatCurrency(data.avgLoanSize || 0);
+        document.getElementById('repaymentRate').textContent = (data.repaymentRate || 0) + '%';
+      } catch (err) {
+        console.error('Monthly metrics error:', err);
+        renderMockMonthlyMetrics();
+      }
+    }
+
+    function renderBarChart(containerId, data, type) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div class="chart-placeholder">No data available</div>';
+        return;
+      }
+
+      const maxValue = Math.max(...data.map(d => d.value || 0));
+      const colors = {
+        revenue: 'linear-gradient(180deg, #10b981, #059669)',
+        loan: 'linear-gradient(180deg, #3b82f6, #2563eb)',
+        payment: 'linear-gradient(180deg, #f59e0b, #d97706)',
+        user: 'linear-gradient(180deg, #8b5cf6, #7c3aed)'
+      };
+
+      container.innerHTML = data.map(item => `
+        <div style="display: flex; flex-direction: column; align-items: center; flex: 1;">
+          <div style="width: 100%; height: 200px; display: flex; align-items: flex-end; justify-content: center;">
+            <div class="chart-bar" style="height: ${(item.value / maxValue) * 100}%; background: ${colors[type] || colors.revenue};" title="${item.label}: ${formatCurrency(item.value)}"></div>
+          </div>
+          <div class="chart-bar-label">${item.label}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderTopLoans(loans) {
+      const tbody = document.getElementById('topLoansTable');
+      if (!loans || loans.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--gray-600);">No loans found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = loans.slice(0, 10).map(loan => `
+        <tr>
+          <td>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.75rem;">${loan.borrowerName?.charAt(0) || 'U'}</div>
+              <span>${loan.borrowerName || 'Unknown'}</span>
+            </div>
+          </td>
+          <td style="font-weight: 600;">${formatCurrency(loan.amount)}</td>
+          <td>${loan.interest || 0}%</td>
+          <td><span class="status-badge ${getStatusClass(loan.status)}">${loan.status || 'Pending'}</span></td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <div class="progress-bar" style="width: 100px;">
+                <div class="progress-fill" style="width: ${loan.progress || 0}%"></div>
+              </div>
+              <span style="font-size: 0.75rem;">${loan.progress || 0}%</span>
+            </div>
+          </td>
+          <td style="color: var(--gray-600);">${formatDate(loan.dueDate)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function getStatusClass(status) {
+      const statusMap = {
+        'active': 'active',
+        'approved': 'active',
+        'completed': 'active',
+        'pending': 'pending',
+        'defaulted': 'overdue'
+      };
+      return statusMap[status?.toLowerCase()] || 'pending';
+    }
+
+    function formatCurrency(amount) {
+      return 'KSh ' + Number(amount).toLocaleString('en-KE', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return 'N/A';
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-KE', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function showErrorMessage(message) {
+      console.error(message);
+      // Could show a toast notification here
+    }
+
+    function exportReport() {
+      alert('PDF export feature coming soon!\n\nThis will generate a comprehensive report with all analytics and charts.');
+    }
+
+    function openUsersModal() {
+      window.location.href = 'admin-dashboard.html#users';
+    }
+
+    function openInboxModal() {
+      window.location.href = 'admin-dashboard.html#inbox';
+    }
+
+    // Mock data functions for when API is not available
+    function renderMockRevenueChart() {
+      const mockData = [
+        { label: 'Jan', value: 45000 },
+        { label: 'Feb', value: 52000 },
+        { label: 'Mar', value: 48000 },
+        { label: 'Apr', value: 61000 },
+        { label: 'May', value: 55000 },
+        { label: 'Jun', value: 68000 }
+      ];
+      document.getElementById('totalRevenue').textContent = 'KSh 329,000';
+      renderBarChart('revenueBars', mockData, 'revenue');
+    }
+
+    function renderMockLoanChart() {
+      const mockData = [
+        { label: 'Active', value: 45 },
+        { label: 'Completed', value: 128 },
+        { label: 'Defaulted', value: 12 }
+      ];
+      document.getElementById('totalLoans').textContent = '185';
+      renderBarChart('loanBars', mockData, 'loan');
+    }
+
+    function renderMockPaymentChart() {
+      const mockData = [
+        { label: 'Pending', value: 23 },
+        { label: 'Completed', value: 156 }
+      ];
+      document.getElementById('totalPayments').textContent = '179';
+      renderBarChart('paymentBars', mockData, 'payment');
+    }
+
+    function renderMockUserChart() {
+      const mockData = [
+        { label: 'Jan', value: 32 },
+        { label: 'Feb', value: 45 },
+        { label: 'Mar', value: 38 },
+        { label: 'Apr', value: 52 },
+        { label: 'May', value: 48 },
+        { label: 'Jun', value: 61 }
+      ];
+      document.getElementById('totalUsers').textContent = '276';
+      renderBarChart('userBars', mockData, 'user');
+    }
+
+    function renderMockTopLoans() {
+      const mockLoans = [
+        { borrowerName: 'John Doe', amount: 50000, interest: 12, status: 'active', progress: 65, dueDate: '2024-04-15' },
+        { borrowerName: 'Jane Smith', amount: 75000, interest: 10, status: 'active', progress: 80, dueDate: '2024-04-20' },
+        { borrowerName: 'Peter Kimani', amount: 30000, interest: 15, status: 'completed', progress: 100, dueDate: '2024-03-01' },
+        { borrowerName: 'Mary Wanjiku', amount: 100000, interest: 8, status: 'active', progress: 45, dueDate: '2024-05-10' },
+        { borrowerName: 'David Ochieng', amount: 45000, interest: 12, status: 'pending', progress: 0, dueDate: '2024-04-30' }
+      ];
+      renderTopLoans(mockLoans);
+    }
+
+    function renderMockMonthlyMetrics() {
+      document.getElementById('totalDisbursed').textContent = 'KSh 450,000';
+      document.getElementById('totalCollected').textContent = 'KSh 380,000';
+      document.getElementById('outstandingBalance').textContent = 'KSh 220,000';
+      document.getElementById('avgLoanSize').textContent = 'KSh 52,000';
+      document.getElementById('repaymentRate').textContent = '84.4%';
+    }
+  </script>
+</body>
+</html>

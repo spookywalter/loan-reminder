@@ -76,6 +76,7 @@
       padding: 2rem;
       margin-bottom: 2rem;
       box-shadow: var(--shadow-lg);
+      position: relative;
     }
 
     .header-top {
@@ -96,6 +97,54 @@
       gap: 0.5rem;
     }
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .header-profile-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--white);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .header-profile-icon:hover {
+      background: rgba(255, 255, 255, 0.32);
+      transform: translateY(-1px);
+    }
+
+    .dashboard-profile-button {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 9999;
+      background: #ffffff;
+      color: #065f46;
+      border: 3px solid #065f46;
+      border-radius: 999px;
+      padding: 0.85rem 1.2rem;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      box-shadow: 0 10px 24px rgba(6, 95, 70, 0.28);
+    }
+
+    .dashboard-profile-button:hover {
+      background: #ecfdf5;
+    }
+
     .subtitle {
       max-width: 1200px;
       margin: 0.5rem auto 0;
@@ -107,6 +156,17 @@
       display: flex;
       align-items: center;
       gap: 1rem;
+    }
+
+    .header-profile-link {
+      background: rgba(255, 255, 255, 0.2);
+      color: var(--white);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      text-decoration: none;
+    }
+
+    .header-profile-link:hover {
+      background: rgba(255, 255, 255, 0.3);
     }
 
     .theme-toggle {
@@ -230,6 +290,36 @@
       font-size: 0.9375rem;
     }
 
+    .profile-summary {
+      margin-top: 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .profile-summary-item {
+      background: var(--gray-50);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 0.875rem 1rem;
+    }
+
+    .profile-summary-label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--gray-600);
+      margin-bottom: 0.35rem;
+      font-weight: 700;
+    }
+
+    .profile-summary-value {
+      color: var(--gray-900);
+      font-weight: 600;
+      word-break: break-word;
+    }
+
     /* Stats Grid */
     .quick-stats {
       display: grid;
@@ -305,6 +395,12 @@
       margin: 0 auto 1.25rem;
       font-size: 1.75rem;
       box-shadow: var(--shadow-sm);
+    }
+
+    .feature-card .icon svg {
+      width: 30px;
+      height: 30px;
+      stroke: currentColor;
     }
 
     .feature-card h3 {
@@ -452,6 +548,38 @@
       resize: vertical;
     }
 
+    .form-grid-two {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    .form-help {
+      color: var(--gray-600);
+      font-size: 0.8125rem;
+      margin-top: 0.35rem;
+    }
+
+    .status-message {
+      margin-top: 1rem;
+      padding: 0.875rem 1rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      display: none;
+    }
+
+    .status-message.success {
+      display: block;
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-message.error {
+      display: block;
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
     .btn {
       padding: 0.875rem 1.5rem;
       border: none;
@@ -549,6 +677,160 @@
       color: #1e40af;
     }
 
+    /* Inbox/Messaging Styles */
+    .notification-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: var(--danger);
+      color: var(--white);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .conversation-item {
+      background: var(--gray-50);
+      padding: 1rem;
+      border-radius: var(--radius);
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .conversation-item:hover {
+      background: var(--gray-100);
+      border-color: var(--primary);
+    }
+
+    .conversation-item.unread {
+      background: #ecfdf5;
+      border-left: 4px solid var(--primary);
+    }
+
+    .conversation-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.125rem;
+      flex-shrink: 0;
+    }
+
+    .conversation-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .conversation-name {
+      font-weight: 600;
+      color: var(--gray-800);
+      margin-bottom: 0.25rem;
+    }
+
+    .conversation-preview {
+      font-size: 0.8125rem;
+      color: var(--gray-600);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .conversation-meta {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .conversation-time {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+      margin-bottom: 0.25rem;
+    }
+
+    .conversation-unread {
+      background: var(--primary);
+      color: var(--white);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+    }
+
+    /* Chat Messages */
+    .chat-message {
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-message.sent {
+      align-items: flex-end;
+    }
+
+    .chat-message.received {
+      align-items: flex-start;
+    }
+
+    .chat-message-bubble {
+      max-width: 70%;
+      padding: 0.75rem 1rem;
+      border-radius: 16px;
+      position: relative;
+    }
+
+    .chat-message.sent .chat-message-bubble {
+      background: var(--primary);
+      color: var(--white);
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-message.received .chat-message-bubble {
+      background: var(--gray-200);
+      color: var(--gray-800);
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-message-meta {
+      font-size: 0.6875rem;
+      color: var(--gray-500);
+      margin-top: 0.25rem;
+      padding: 0 0.5rem;
+    }
+
+    .chat-message.subject {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1.5rem;
+      color: var(--gray-600);
+    }
+
+    .empty-state svg {
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 2rem;
+      color: var(--gray-600);
+    }
+
     .query-meta {
       font-size: 0.8125rem;
       color: var(--gray-600);
@@ -615,7 +897,7 @@
     <header class="dashboard-header">
       <div class="header-top">
         <div>
-          <h1>💰 Loan Reminder</h1>
+          <h1>Loan Reminder</h1>
           <p class="subtitle">Manage Your Loans Efficiently</p>
         </div>
         <div class="header-right">
@@ -685,6 +967,23 @@
       <div class="welcome-section">
         <h2>Welcome back! 👋</h2>
         <p>Track your loans, manage payments, and stay on top of your finances.</p>
+        <div style="margin-top:12px;">
+          <a href="profile.html" style="display:inline-block;background:#abf71f;color:#ffffff;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:800;font-family:Arial,sans-serif;">PROFILE PAGE</a>
+        </div>
+        <div class="profile-summary">
+          <div class="profile-summary-item">
+            <span class="profile-summary-label">Full Name</span>
+            <span class="profile-summary-value" id="profileSummaryName">Not set</span>
+          </div>
+          <div class="profile-summary-item">
+            <span class="profile-summary-label">Email</span>
+            <span class="profile-summary-value" id="profileSummaryEmail">Loading...</span>
+          </div>
+          <div class="profile-summary-item">
+            <span class="profile-summary-label">Phone</span>
+            <span class="profile-summary-value" id="profileSummaryPhone">Not set</span>
+          </div>
+        </div>
       </div>
 
       <div class="quick-stats">
@@ -704,29 +1003,35 @@
 
       <div class="features-grid">
         <div class="feature-card" onclick="window.location.href='view-loans.html'">
-          <div class="icon">📋</div>
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6l1 2h3a1 1 0 0 1 1 1v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a1 1 0 0 1 1-1h3l1-2z"/><path d="M9 12h6"/><path d="M9 16h6"/></svg></div>
           <h3>View Loans</h3>
           <p>Check your current loans</p>
         </div>
         <div class="feature-card" onclick="window.location.href='add-loan.html'">
-          <div class="icon">➕</div>
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 8v8"/><path d="M8 12h8"/></svg></div>
           <h3>Add Loan</h3>
           <p>Add new loans</p>
         </div>
         <div class="feature-card" onclick="window.location.href='quick-pay.html'">
-          <div class="icon">⚡</div>
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></div>
           <h3>Quick Pay</h3>
           <p>Pay loans instantly</p>
         </div>
         <div class="feature-card" onclick="window.location.href='payment-history.html'">
-          <div class="icon">💳</div>
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
           <h3>Payments</h3>
           <p>View payment history</p>
         </div>
         <div class="feature-card" onclick="openSupportModal()">
-          <div class="icon">💬</div>
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
           <h3>Support</h3>
           <p>Submit queries</p>
+        </div>
+        <div class="feature-card" onclick="openInboxModal()">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg></div>
+          <h3>Inbox</h3>
+          <p>Messages</p>
+          <span id="inboxBadge" class="notification-badge" style="display: none;">0</span>
         </div>
       </div>
 
@@ -745,7 +1050,7 @@
   <div id="quickPayModal" class="modal">
     <div class="modal-content" style="max-width: 700px;">
       <div class="modal-header">
-        <h3>⚡ Quick Pay</h3>
+        <h3>Quick Pay</h3>
         <button class="modal-close" onclick="closeQuickPayModal()">&times;</button>
       </div>
       <div class="modal-body">
@@ -820,7 +1125,7 @@
 
           <!-- M-Pesa Details -->
           <div id="mpesaDetails" class="payment-details" style="display: none; background: #dcfce7; padding: 1.25rem; border-radius: var(--radius); margin-bottom: 1.5rem; border-left: 4px solid var(--success);">
-            <h4 style="margin-bottom: 0.75rem; color: #166534;">📱 M-Pesa Payment</h4>
+            <h4 style="margin-bottom: 0.75rem; color: #166534;">M-Pesa Payment</h4>
             <div class="form-group" style="margin-bottom: 0.75rem;">
               <label style="color: #166534;">M-Pesa Phone Number</label>
               <input type="tel" id="mpesaPhone" placeholder="e.g., 254712345678" style="width: 100%; padding: 0.75rem; border: 2px solid #86efac; border-radius: var(--radius);">
@@ -830,7 +1135,7 @@
 
           <!-- Card Details -->
           <div id="cardDetails" class="payment-details" style="display: none; background: var(--gray-50); padding: 1.25rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
-            <h4 style="margin-bottom: 0.75rem;">💳 Card Payment</h4>
+            <h4 style="margin-bottom: 0.75rem;">Card Payment</h4>
             <div class="form-group" style="margin-bottom: 0.75rem;">
               <label>Card Number</label>
               <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: var(--radius);">
@@ -859,7 +1164,7 @@
 
           <!-- Bank Transfer Details -->
           <div id="bankTransferDetails" class="payment-details" style="display: none; background: var(--gray-50); padding: 1.25rem; border-radius: var(--radius); margin-bottom: 1.5rem;">
-            <h4 style="margin-bottom: 0.75rem;">🏦 Bank Transfer</h4>
+            <h4 style="margin-bottom: 0.75rem;">Bank Transfer</h4>
             <div class="form-group" style="margin-bottom: 0.75rem;">
               <label>Account Number</label>
               <input type="text" placeholder="Enter account number" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: var(--radius);">
@@ -883,11 +1188,67 @@
     </div>
   </div>
 
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>My Profile</h3>
+        <button class="modal-close" onclick="closeProfileModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="profileForm">
+          <div class="form-grid-two">
+            <div class="form-group">
+              <label for="profileUsername">Username</label>
+              <input type="text" id="profileUsername" disabled>
+              <div class="form-help">Your username is currently read-only.</div>
+            </div>
+            <div class="form-group">
+              <label for="profileFullName">Full Name</label>
+              <input type="text" id="profileFullName" maxlength="100" placeholder="Your full name">
+            </div>
+            <div class="form-group">
+              <label for="profileEmail">Email</label>
+              <input type="email" id="profileEmail" required placeholder="your@email.com">
+            </div>
+            <div class="form-group">
+              <label for="profilePhone">Phone Number</label>
+              <input type="tel" id="profilePhone" placeholder="e.g. 0712345678 or +254712345678">
+            </div>
+            <div class="form-group">
+              <label for="profileDateOfBirth">Date of Birth</label>
+              <input type="date" id="profileDateOfBirth">
+            </div>
+            <div class="form-group">
+              <label for="profileOccupation">Occupation</label>
+              <input type="text" id="profileOccupation" maxlength="100" placeholder="What do you do?">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="profileLocation">Location</label>
+            <input type="text" id="profileLocation" maxlength="100" placeholder="City, town, or area">
+          </div>
+          <div class="form-group">
+            <label for="profileBio">Personal Notes</label>
+            <textarea id="profileBio" maxlength="500" placeholder="Anything small you'd like to keep in your profile"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="profileCreatedAt">Member Since</label>
+            <input type="text" id="profileCreatedAt" disabled>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%">
+            Save Profile
+          </button>
+          <div id="profileStatus" class="status-message"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- Support Modal -->
   <div id="supportModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>💬 Support Center</h3>
+        <h3>Support Center</h3>
         <button class="modal-close" onclick="closeSupportModal()">&times;</button>
       </div>
       <div class="modal-body">
@@ -943,8 +1304,79 @@
     </div>
   </div>
 
+  <!-- Inbox/Messaging Modal -->
+  <div id="inboxModal" class="modal">
+    <div class="modal-content" style="max-width: 900px;">
+      <div class="modal-header">
+        <h3>Inbox</h3>
+        <button class="modal-close" onclick="closeInboxModal()">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 0;">
+        <div style="display: flex; border-bottom: 2px solid var(--border-color);">
+          <button class="tab" id="inboxConversationsTab" onclick="showInboxTab('conversations')" style="flex: 1; border-radius: 0; border: none; background: var(--bg-primary);">
+            Conversations
+          </button>
+          <button class="tab" id="inboxSentTab" onclick="showInboxTab('sent')" style="flex: 1; border-radius: 0; border: none; background: var(--bg-primary);">
+            📤 Sent
+          </button>
+          <button class="tab active" id="inboxNewTab" onclick="showInboxTab('new')" style="flex: 1; border-radius: 0; border: none; background: var(--bg-primary);">
+            ✉️ New Message
+          </button>
+        </div>
+
+        <div id="inboxConversations" style="display: none; padding: 1.5rem; max-height: 500px; overflow-y: auto;">
+          <div id="conversationsList"></div>
+        </div>
+
+        <div id="inboxSent" style="display: none; padding: 1.5rem; max-height: 500px; overflow-y: auto;">
+          <div id="sentMessagesList"></div>
+        </div>
+
+        <div id="inboxNew" style="padding: 1.5rem;">
+          <div class="form-group">
+            <label>Recipient</label>
+            <select id="messageRecipient" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: var(--radius); background: var(--bg-primary); color: var(--text-primary);">
+              <option value="">-- Select Recipient --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <input type="text" id="messageSubject" placeholder="Enter subject" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: var(--radius); background: var(--bg-primary); color: var(--text-primary);">
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea id="messageBody" placeholder="Type your message..." rows="6" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: var(--radius); background: var(--bg-primary); color: var(--text-primary); resize: vertical;"></textarea>
+          </div>
+          <div id="sendMessageStatus" style="margin-bottom: 1rem;"></div>
+          <button type="button" onclick="sendMessage()" class="btn btn-primary" style="width: 100%;">
+            Send Message
+          </button>
+        </div>
+
+        <div id="inboxChat" style="display: none; padding: 0; height: 550px; display: flex; flex-direction: column;">
+          <div id="chatHeader" style="padding: 1rem; border-bottom: 2px solid var(--border-color); background: var(--bg-primary); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong id="chatPartnerName" style="font-size: 1.125rem;"></strong>
+              <div id="chatPartnerStatus" style="font-size: 0.75rem; color: var(--text-secondary);"></div>
+            </div>
+            <button type="button" onclick="closeChat()" class="btn btn-secondary" style="padding: 0.5rem 1rem;">← Back</button>
+          </div>
+          <div id="chatMessages" style="flex: 1; overflow-y: auto; padding: 1rem;"></div>
+          <div id="chatInput" style="padding: 1rem; border-top: 2px solid var(--border-color); background: var(--bg-primary);">
+            <div style="display: flex; gap: 0.75rem;">
+              <input type="text" id="chatMessageInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter')sendChatMessage()" style="flex: 1; padding: 0.75rem; border: 2px solid var(--border-color); border-radius: var(--radius); background: var(--bg-secondary); color: var(--text-primary);">
+              <button type="button" onclick="sendChatMessage()" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app-config.js"></script>
   <script>
     const token = localStorage.getItem('token');
+    let userProfile = null;
     if (!token) window.location.href = 'login.html';
 
     // Theme Toggle
@@ -982,6 +1414,62 @@
       return 'KSh ' + new Intl.NumberFormat('en-US').format(amount);
     }
 
+    function setProfileStatus(message, type) {
+      const status = document.getElementById('profileStatus');
+      status.textContent = message;
+      status.className = `status-message ${type}`;
+    }
+
+    function fillProfileSummary(profile) {
+      document.getElementById('profileSummaryName').textContent = profile.fullName || profile.username || 'Not set';
+      document.getElementById('profileSummaryEmail').textContent = profile.email || 'Not set';
+      document.getElementById('profileSummaryPhone').textContent = profile.phoneNumber || 'Not set';
+    }
+
+    function populateProfileForm(profile) {
+      document.getElementById('profileUsername').value = profile.username || '';
+      document.getElementById('profileFullName').value = profile.fullName || '';
+      document.getElementById('profileEmail').value = profile.email || '';
+      document.getElementById('profilePhone').value = profile.phoneNumber || '';
+      document.getElementById('profileDateOfBirth').value = profile.dateOfBirth ? new Date(profile.dateOfBirth).toISOString().split('T')[0] : '';
+      document.getElementById('profileOccupation').value = profile.occupation || '';
+      document.getElementById('profileLocation').value = profile.location || '';
+      document.getElementById('profileBio').value = profile.bio || '';
+      document.getElementById('profileCreatedAt').value = profile.createdAt ? new Date(profile.createdAt).toLocaleDateString() : '';
+    }
+
+    async function loadProfile() {
+      try {
+        const response = await fetch('http://localhost:5000/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+
+        if (response.ok && data.user) {
+          userProfile = data.user;
+          fillProfileSummary(userProfile);
+          populateProfileForm(userProfile);
+        }
+      } catch (err) {
+        console.error('Error loading profile:', err);
+      }
+    }
+
+    function openProfileModal() {
+      document.getElementById('profileModal').style.display = 'flex';
+      if (userProfile) {
+        populateProfileForm(userProfile);
+      } else {
+        loadProfile();
+      }
+      document.getElementById('profileStatus').className = 'status-message';
+      document.getElementById('profileStatus').textContent = '';
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profileModal').style.display = 'none';
+    }
+
     async function fetchDashboardData() {
       try {
         const response = await fetch('http://localhost:5000/loans', {
@@ -1002,6 +1490,7 @@
       }
     }
     fetchDashboardData();
+    loadProfile();
 
     // Support Modal
     const supportModal = document.getElementById('supportModal');
@@ -1014,6 +1503,44 @@
     function closeSupportModal() {
       supportModal.style.display = 'none';
     }
+
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        email: document.getElementById('profileEmail').value.trim(),
+        phoneNumber: document.getElementById('profilePhone').value.trim(),
+        fullName: document.getElementById('profileFullName').value.trim(),
+        dateOfBirth: document.getElementById('profileDateOfBirth').value,
+        occupation: document.getElementById('profileOccupation').value.trim(),
+        location: document.getElementById('profileLocation').value.trim(),
+        bio: document.getElementById('profileBio').value.trim()
+      };
+
+      try {
+        const response = await fetch('http://localhost:5000/profile', {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+
+        if (response.ok && data.user) {
+          userProfile = data.user;
+          fillProfileSummary(userProfile);
+          populateProfileForm(userProfile);
+          setProfileStatus('Profile updated successfully.', 'success');
+        } else {
+          setProfileStatus(data.error || 'Failed to update profile.', 'error');
+        }
+      } catch (err) {
+        console.error('Profile update error:', err);
+        setProfileStatus('Network error. Please try again.', 'error');
+      }
+    });
 
     function showSupportTab(tab) {
       if (tab === 'new') {
@@ -1269,11 +1796,314 @@
       window.location.href = 'login.html';
     }
 
+    // ==================== INBOX/MESSAGING FUNCTIONS ====================
+    
+    let currentChatPartner = null;
+    let currentChatPartnerName = null;
+
+    function openInboxModal() {
+      document.getElementById('inboxModal').style.display = 'flex';
+      showInboxTab('conversations');
+      loadConversations();
+      loadUnreadCount();
+    }
+
+    function closeInboxModal() {
+      document.getElementById('inboxModal').style.display = 'none';
+    }
+
+    function showInboxTab(tab) {
+      // Hide all tabs
+      document.getElementById('inboxConversations').style.display = 'none';
+      document.getElementById('inboxSent').style.display = 'none';
+      document.getElementById('inboxNew').style.display = 'none';
+      document.getElementById('inboxChat').style.display = 'none';
+
+      // Remove active from all tab buttons
+      document.getElementById('inboxConversationsTab').classList.remove('active');
+      document.getElementById('inboxSentTab').classList.remove('active');
+      document.getElementById('inboxNewTab').classList.remove('active');
+
+      // Show selected tab
+      if (tab === 'conversations') {
+        document.getElementById('inboxConversations').style.display = 'block';
+        document.getElementById('inboxConversationsTab').classList.add('active');
+        loadConversations();
+      } else if (tab === 'sent') {
+        document.getElementById('inboxSent').style.display = 'block';
+        document.getElementById('inboxSentTab').classList.add('active');
+        loadSentMessages();
+      } else if (tab === 'new') {
+        document.getElementById('inboxNew').style.display = 'block';
+        document.getElementById('inboxNewTab').classList.add('active');
+        loadRecipients();
+      }
+    }
+
+    async function loadConversations() {
+      try {
+        const response = await fetch('http://localhost:5000/api/messages/conversations', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        const container = document.getElementById('conversationsList');
+
+        if (!data.conversations || data.conversations.length === 0) {
+          container.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg><p>No conversations yet</p></div>';
+          return;
+        }
+
+        container.innerHTML = data.conversations.map(conv => `
+          <div class="conversation-item ${conv.unreadCount > 0 ? 'unread' : ''}" onclick="openChat('${conv.partner._id}', '${conv.partner.username.replace(/'/g, "\\'")}')">
+            <div class="conversation-avatar">${conv.partner.username.charAt(0).toUpperCase()}</div>
+            <div class="conversation-info">
+              <div class="conversation-name">${conv.partner.username}</div>
+              <div class="conversation-preview">${conv.lastMessage.subject}: ${conv.lastMessage.body.substring(0, 50)}...</div>
+            </div>
+            <div class="conversation-meta">
+              <div class="conversation-time">${new Date(conv.lastMessage.createdAt).toLocaleDateString()}</div>
+              ${conv.unreadCount > 0 ? `<span class="conversation-unread">${conv.unreadCount}</span>` : ''}
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Error loading conversations:', err);
+        document.getElementById('conversationsList').innerHTML = '<div class="empty-state">Failed to load conversations</div>';
+      }
+    }
+
+    async function loadSentMessages() {
+      try {
+        const response = await fetch('http://localhost:5000/api/messages/sent', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        const container = document.getElementById('sentMessagesList');
+
+        if (!data.messages || data.messages.length === 0) {
+          container.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6v2l8 5 8-5V6l-8 5z"/></svg><p>No sent messages</p></div>';
+          return;
+        }
+
+        container.innerHTML = data.messages.map(msg => `
+          <div class="query-item">
+            <div class="query-item-header">
+              <strong>To: ${msg.recipientId.username}</strong>
+              <span class="query-status" style="background: ${msg.isRead ? '#dcfce7' : '#fef3c7'}; color: ${msg.isRead ? '#166534' : '#92400e'};">${msg.isRead ? 'Read' : 'Unread'}</span>
+            </div>
+            <div class="query-meta">${msg.subject} • ${new Date(msg.createdAt).toLocaleDateString()}</div>
+            <p>${msg.body}</p>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Error loading sent messages:', err);
+        document.getElementById('sentMessagesList').innerHTML = '<div class="empty-state">Failed to load sent messages</div>';
+      }
+    }
+
+    async function loadRecipients() {
+      try {
+        // For regular users, show admin as the only recipient option
+        // For future: could allow messaging between users
+        const response = await fetch('http://localhost:5000/admin/messaging/users', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        let users = [];
+        if (response.ok) {
+          const data = await response.json();
+          users = data.users || [];
+        }
+
+        // Also get admin users
+        const allUsersResponse = await fetch('http://localhost:5000/admin/users', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (allUsersResponse.ok) {
+          const allData = await allUsersResponse.json();
+          const adminUsers = (allData.users || []).filter(u => u.isAdmin);
+          users = [...users, ...adminUsers];
+        }
+
+        const select = document.getElementById('messageRecipient');
+        select.innerHTML = '<option value="">-- Select Recipient --</option>' +
+          users.map(user => `<option value="${user._id}">${user.username}${user.isAdmin ? ' (Admin)' : ''}</option>`).join('');
+      } catch (err) {
+        console.error('Error loading recipients:', err);
+        document.getElementById('messageRecipient').innerHTML = '<option value="">Unable to load recipients</option>';
+      }
+    }
+
+    async function sendMessage() {
+      const recipientId = document.getElementById('messageRecipient').value;
+      const subject = document.getElementById('messageSubject').value;
+      const body = document.getElementById('messageBody').value;
+      const statusEl = document.getElementById('sendMessageStatus');
+
+      if (!recipientId || !subject || !body) {
+        statusEl.innerHTML = '<p style="color: var(--danger);">Please fill in all fields</p>';
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:5000/api/messages', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ recipientId, subject, body })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          statusEl.innerHTML = '<p style="color: var(--success);">Message sent successfully!</p>';
+          document.getElementById('messageSubject').value = '';
+          document.getElementById('messageBody').value = '';
+          setTimeout(() => {
+            statusEl.innerHTML = '';
+            showInboxTab('sent');
+          }, 1500);
+        } else {
+          statusEl.innerHTML = `<p style="color: var(--danger);">${data.error || 'Failed to send message'}</p>`;
+        }
+      } catch (err) {
+        console.error('Send message error:', err);
+        statusEl.innerHTML = '<p style="color: var(--danger);">Network error. Please try again.</p>';
+      }
+    }
+
+    async function openChat(partnerId, partnerName) {
+      currentChatPartner = partnerId;
+      currentChatPartnerName = partnerName;
+
+      // Hide other tabs, show chat
+      document.getElementById('inboxConversations').style.display = 'none';
+      document.getElementById('inboxSent').style.display = 'none';
+      document.getElementById('inboxNew').style.display = 'none';
+      document.getElementById('inboxChat').style.display = 'flex';
+
+      document.getElementById('chatPartnerName').textContent = partnerName;
+      document.getElementById('chatPartnerStatus').textContent = 'Conversation';
+
+      // Mark messages as read
+      await fetch(`http://localhost:5000/api/messages/read-all/${partnerId}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      loadUnreadCount();
+      loadChatMessages();
+    }
+
+    function closeChat() {
+      document.getElementById('inboxChat').style.display = 'none';
+      document.getElementById('inboxConversations').style.display = 'block';
+      currentChatPartner = null;
+      loadConversations();
+    }
+
+    async function loadChatMessages() {
+      if (!currentChatPartner) return;
+
+      try {
+        const response = await fetch(`http://localhost:5000/api/messages/conversation/${currentChatPartner}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        const container = document.getElementById('chatMessages');
+
+        if (!data.messages || data.messages.length === 0) {
+          container.innerHTML = '<div class="empty-state" style="padding: 2rem;"><p>No messages yet. Start the conversation!</p></div>';
+          return;
+        }
+
+        container.innerHTML = data.messages.map(msg => {
+          const isSent = msg.senderId._id === currentChatPartner;
+          return `
+            <div class="chat-message ${isSent ? 'sent' : 'received'}">
+              <div class="chat-message-bubble">
+                <div class="subject">${msg.subject}</div>
+                <div>${msg.body}</div>
+              </div>
+              <div class="chat-message-meta">${new Date(msg.createdAt).toLocaleString()}</div>
+            </div>
+          `;
+        }).join('');
+
+        container.scrollTop = container.scrollHeight;
+      } catch (err) {
+        console.error('Error loading chat messages:', err);
+        document.getElementById('chatMessages').innerHTML = '<div class="empty-state">Failed to load messages</div>';
+      }
+    }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chatMessageInput');
+      const body = input.value.trim();
+
+      if (!body || !currentChatPartner) return;
+
+      try {
+        const response = await fetch('http://localhost:5000/api/messages', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            recipientId: currentChatPartner,
+            subject: 'Re: Message',
+            body: body
+          })
+        });
+
+        if (response.ok) {
+          input.value = '';
+          loadChatMessages();
+        }
+      } catch (err) {
+        console.error('Send chat message error:', err);
+      }
+    }
+
+    async function loadUnreadCount() {
+      try {
+        const response = await fetch('http://localhost:5000/api/messages/unread-count', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        const badge = document.getElementById('inboxBadge');
+        
+        if (data.count > 0) {
+          badge.textContent = data.count > 99 ? '99+' : data.count;
+          badge.style.display = 'inline-block';
+        } else {
+          badge.style.display = 'none';
+        }
+      } catch (err) {
+        console.error('Error loading unread count:', err);
+      }
+    }
+
+    // Load unread count on page load
+    loadUnreadCount();
+
+    // Poll for new messages every 30 seconds
+    setInterval(loadUnreadCount, 30000);
+
+    // ==================== END INBOX FUNCTIONS ====================
+
     window.onclick = function(event) {
+      const profileModal = document.getElementById('profileModal');
       const quickPayModal = document.getElementById('quickPayModal');
       const supportModal = document.getElementById('supportModal');
+      const inboxModal = document.getElementById('inboxModal');
+      if (event.target === profileModal) closeProfileModal();
       if (event.target === quickPayModal) closeQuickPayModal();
       if (event.target === supportModal) closeSupportModal();
+      if (event.target === inboxModal) closeInboxModal();
     }
   </script>
 </body>
