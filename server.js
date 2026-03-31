@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const fs = require('fs');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -15,6 +16,7 @@ const morgan = require('morgan');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const AfricaTalking = require('africastalking');
+const path = require('path');
 
 // M-Pesa Daraja API Configuration - PRODUCTION
 const MPESA_CONFIG = {
@@ -51,6 +53,9 @@ const emailTransporter = nodemailer.createTransport(emailConfig);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const projectRoot = __dirname;
+const publicDirectory = path.join(projectRoot, 'public');
+const staticDirectory = fs.existsSync(publicDirectory) ? publicDirectory : projectRoot;
 const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
 const ADMIN_SECRET_KEY = process.env.ADMIN_SECRET_KEY || crypto.randomBytes(32).toString('hex');
 const allowedOrigins = new Set([
@@ -116,6 +121,31 @@ app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'DENY');
   next();
 });
+
+// Compatibility middleware for deployments where clients call legacy endpoints under /api.
+// Keeps existing native /api routes untouched and remaps others (e.g. /api/login -> /login).
+const nativeApiPrefixes = [
+  '/api/health',
+  '/api/messages',
+  '/api/mpesa',
+  '/api/admin/reports'
+];
+
+app.use((req, res, next) => {
+  if (!req.path.startsWith('/api/')) {
+    return next();
+  }
+
+  const isNativeApiRoute = nativeApiPrefixes.some((prefix) => req.path.startsWith(prefix));
+  if (isNativeApiRoute) {
+    return next();
+  }
+
+  req.url = req.url.replace(/^\/api/, '') || '/';
+  return next();
+});
+
+app.use(express.static(staticDirectory));
 
 const mongoUri = process.env.MONGO_URI ||
   process.env.MONGODB_URI ||
