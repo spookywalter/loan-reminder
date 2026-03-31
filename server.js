@@ -125,11 +125,7 @@ if (!mongoUri) {
   throw new Error('MongoDB connection string is not defined. Please set MONGO_URI environment variable.');
 }
 let mongoConnectionPromise;
-import mongoose from "mongoose";
-     mongoose.connect(mongoUri)
-     .then(() => console.log('MongoDB Connected'))
-      .catch(err => {console.log('MongoDB Connection Error:', err.message); process.exit(1);});
-      
+
 function normalizePhoneNumber(phoneNumber) {
   if (!phoneNumber) {
     return '';
