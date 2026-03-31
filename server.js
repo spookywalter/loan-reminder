@@ -120,6 +120,9 @@ app.use((req, res, next) => {
 const mongoUri = process.env.MONGO_URI ||
   process.env.MONGODB_URI ||
   'mongodb://127.0.0.1:27017/loanReminder';
+const mongoConnectOptions = {
+  serverSelectionTimeoutMS: 5000
+};
 
 if (!mongoUri) {
   throw new Error('MongoDB connection string is not defined. Please set MONGO_URI environment variable.');
@@ -218,7 +221,7 @@ async function ensureDatabaseConnection() {
   }
 
   if (!mongoConnectionPromise) {
-    mongoConnectionPromise = mongoose.connect(mongoUri)
+    mongoConnectionPromise = mongoose.connect(mongoUri, mongoConnectOptions)
       .then(connection => {
         console.log('MongoDB Connected');
         return connection;
@@ -232,6 +235,15 @@ async function ensureDatabaseConnection() {
 
   return mongoConnectionPromise;
 }
+
+app.get('/api/health', (req, res) => {
+  res.json({
+    ok: true,
+    environment: process.env.VERCEL ? 'vercel' : 'local',
+    hasMongoUri: Boolean(process.env.MONGO_URI || process.env.MONGODB_URI),
+    dbReadyState: mongoose.connection.readyState
+  });
+});
 
 app.use(async (req, res, next) => {
   try {
