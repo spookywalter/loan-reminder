@@ -1,3 +1,4 @@
-const app = require('../server');
+// Keep the Vercel entrypoint explicitly CommonJS and delegate to the root app.
+const appModule = require('../server.js');
 
-module.exports = app;
+module.exports = appModule.default || appModule;
