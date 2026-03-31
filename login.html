@@ -342,7 +342,7 @@
     });
 
     document.getElementById('googleBtn').addEventListener('click', () => {
-      alert('Google sign-in coming soon!');
+      window.location.href = `${window.API_BASE_URL}/auth/google/start?mode=login`;
     });
   </script>
 </body>

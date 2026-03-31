@@ -43,36 +43,47 @@
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
     const error = urlParams.get('error');
+    const mode = urlParams.get('state') === 'signup' ? 'signup' : 'login';
+
+    function getFallbackPage() {
+      return mode === 'signup' ? 'sign-up.html' : 'login.html';
+    }
 
     if (error) {
       alert('Google Sign In was cancelled or failed.');
-      window.location.href = 'loan application.html';
+      window.location.href = getFallbackPage();
     } else if (code) {
       // Send code to backend
       fetch(`${window.API_BASE_URL}/auth/google/callback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code })
+        body: JSON.stringify({ code, mode })
       })
       .then(response => response.json())
       .then(data => {
         if (data.token) {
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));
-          window.location.href = 'Untitled-1.html';
+          if (data.user?.isAdmin) {
+            window.location.href = 'admin-dashboard.html';
+          } else if (data.blocked) {
+            window.location.href = 'support.html';
+          } else {
+            window.location.href = 'dashboard-new.html';
+          }
         } else {
           alert(data.message || 'Google Sign In failed. Please try again.');
-          window.location.href = 'loan application.html';
+          window.location.href = getFallbackPage();
         }
       })
       .catch(err => {
         console.error('Error:', err);
         alert('An error occurred during Google Sign In. Please try again.');
-        window.location.href = 'loan application.html';
+        window.location.href = getFallbackPage();
       });
     } else {
       // No code, redirect to login
-      window.location.href = 'loan application.html';
+      window.location.href = getFallbackPage();
     }
   </script>
 </body>

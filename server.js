@@ -61,6 +61,10 @@ const allowedOrigins = new Set([
   process.env.FRONTEND_URL,
   process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null
 ].filter(Boolean));
+const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://localhost:5500';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || `${APP_URL.replace(/\/$/, '')}/google-callback.html`;
 
 // Security middleware - relaxed for development
 app.use(helmet({
@@ -113,12 +117,19 @@ app.use((req, res, next) => {
   next();
 });
 
-const mongoUri =
-  process.env.MONGO_URI ||
+const mongoUri = process.env.MONGO_URI ||
   process.env.MONGODB_URI ||
   'mongodb://127.0.0.1:27017/loanReminder';
-let mongoConnectionPromise;
 
+if (!mongoUri) {
+  throw new Error('MongoDB connection string is not defined. Please set MONGO_URI environment variable.');
+}
+let mongoConnectionPromise;
+import mongoose from "mongoose";
+     mongoose.connect(mongoUri)
+     .then(() => console.log('MongoDB Connected'))
+      .catch(err => {console.log('MongoDB Connection Error:', err.message); process.exit(1);});
+      
 function normalizePhoneNumber(phoneNumber) {
   if (!phoneNumber) {
     return '';
@@ -139,6 +150,70 @@ function normalizePhoneNumber(phoneNumber) {
   }
 
   return '';
+}
+
+function getGoogleAuthUrl(mode = 'login') {
+  const params = new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: GOOGLE_REDIRECT_URI,
+    response_type: 'code',
+    scope: 'openid email profile',
+    access_type: 'offline',
+    prompt: 'consent',
+    state: mode === 'signup' ? 'signup' : 'login'
+  });
+
+  return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+}
+
+async function buildUniqueUsername(email, displayName = '') {
+  const emailPrefix = String(email || '').split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
+  const displayPrefix = String(displayName || '').replace(/[^a-zA-Z0-9]/g, '');
+  const baseSource = (displayPrefix || emailPrefix || 'user').toLowerCase();
+  const trimmedBase = baseSource.slice(0, 24) || 'user';
+  let candidate = trimmedBase;
+  let suffix = 1;
+
+  while (await User.exists({ username: candidate })) {
+    const numericSuffix = String(suffix++);
+    candidate = `${trimmedBase.slice(0, Math.max(3, 30 - numericSuffix.length))}${numericSuffix}`;
+  }
+
+  return candidate;
+}
+
+function createAuthResponse(user) {
+  const token = jwt.sign({ id: user._id, username: user.username, isAdmin: user.isAdmin }, JWT_SECRET);
+
+  return {
+    token,
+    blocked: !!user.isBlocked && !user.isAdmin,
+    restrictedToQueries: !!user.isBlocked && !user.isAdmin,
+    message: user.isBlocked && !user.isAdmin
+      ? 'Sorry you have been blocked from access. You can only send a query to the admin.'
+      : 'Login successful',
+    user: {
+      _id: user._id,
+      username: user.username,
+      email: user.email || '',
+      phoneNumber: user.phoneNumber || '',
+      fullName: user.fullName || '',
+      isAdmin: user.isAdmin,
+      isBlocked: !!user.isBlocked,
+      blockedReason: user.blockedReason || ''
+    }
+  };
+}
+
+function generatePasswordResetToken() {
+  const plainToken = crypto.randomBytes(32).toString('hex');
+  const hashedToken = crypto.createHash('sha256').update(plainToken).digest('hex');
+
+  return {
+    plainToken,
+    hashedToken,
+    expiresAt: new Date(Date.now() + 60 * 60 * 1000)
+  };
 }
 
 async function ensureDatabaseConnection() {
@@ -176,6 +251,9 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true, lowercase: true, trim: true, minlength: 3, maxlength: 30 },
   email: { type: String, lowercase: true, trim: true, match: [/^\S+@\S+\.\S+$/, 'Invalid email'] },
   password: { type: String, required: true, minlength: 6 },
+  googleId: { type: String, trim: true, sparse: true, unique: true },
+  resetPasswordToken: { type: String, select: false },
+  resetPasswordExpires: { type: Date, select: false },
   isAdmin: { type: Boolean, default: false },
   isBlocked: { type: Boolean, default: false, index: true },
   blockedAt: Date,
@@ -516,6 +594,183 @@ app.post('/signup', authLimiter, async (req, res) => {
   }
 });
 
+app.post('/forgot-password', authLimiter, async (req, res) => {
+  try {
+    const email = String(req.body?.email || '').trim().toLowerCase();
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      return res.status(400).json({ message: 'Please enter a valid email address.' });
+    }
+
+    const user = await User.findOne({ email }).select('+resetPasswordToken +resetPasswordExpires');
+
+    if (!user) {
+      return res.json({
+        message: 'If that email exists, a password reset link has been sent.'
+      });
+    }
+
+    const { plainToken, hashedToken, expiresAt } = generatePasswordResetToken();
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpires = expiresAt;
+    await user.save();
+
+    const resetUrl = `${APP_URL.replace(/\/$/, '')}/reset-password.html?token=${plainToken}&userId=${user._id}`;
+    const emailResult = await sendEmail(
+      user.email,
+      'Reset your Loan Reminder password',
+      `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1f2937;">
+          <h2 style="color: #10b981;">Reset your password</h2>
+          <p>Hello ${user.fullName || user.username},</p>
+          <p>We received a request to reset your Loan Reminder password.</p>
+          <p>
+            <a href="${resetUrl}" style="display: inline-block; background: #10b981; color: #ffffff; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: 600;">
+              Reset Password
+            </a>
+          </p>
+          <p>This link expires in 1 hour.</p>
+          <p>If you did not request this, you can safely ignore this email.</p>
+        </div>
+      `
+    );
+
+    const response = {
+      message: emailResult.success
+        ? 'If that email exists, a password reset link has been sent.'
+        : 'Email is not configured, but a password reset link has been generated for local testing.'
+    };
+
+    if (!emailResult.success) {
+      response.demoResetUrl = resetUrl;
+    }
+
+    return res.json(response);
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    return res.status(500).json({ message: 'Unable to process password reset right now.' });
+  }
+});
+
+app.post('/reset-password', authLimiter, async (req, res) => {
+  try {
+    const { token, userId, newPassword } = req.body || {};
+
+    if (!token || !userId || !newPassword) {
+      return res.status(400).json({ message: 'Reset token, user, and new password are required.' });
+    }
+
+    if (String(newPassword).length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters long.' });
+    }
+
+    const hashedToken = crypto.createHash('sha256').update(String(token)).digest('hex');
+    const user = await User.findOne({
+      _id: userId,
+      resetPasswordToken: hashedToken,
+      resetPasswordExpires: { $gt: new Date() }
+    }).select('+resetPasswordToken +resetPasswordExpires');
+
+    if (!user) {
+      return res.status(400).json({ message: 'This reset link is invalid or has expired.' });
+    }
+
+    user.password = await bcrypt.hash(String(newPassword), 12);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    return res.json({ message: 'Password reset successful. You can now sign in.' });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    return res.status(500).json({ message: 'Unable to reset password right now.' });
+  }
+});
+
+app.get('/auth/google/start', authLimiter, (req, res) => {
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+    return res.status(500).json({
+      error: 'Google sign-in is not configured on the server. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.'
+    });
+  }
+
+  const requestedMode = req.query.mode === 'signup' ? 'signup' : 'login';
+  res.redirect(getGoogleAuthUrl(requestedMode));
+});
+
+app.post('/auth/google/callback', authLimiter, async (req, res) => {
+  try {
+    if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+      return res.status(500).json({
+        error: 'Google sign-in is not configured on the server. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.'
+      });
+    }
+
+    const { code } = req.body;
+    if (!code) {
+      return res.status(400).json({ error: 'Authorization code is required' });
+    }
+
+    const tokenResponse = await axios.post(
+      'https://oauth2.googleapis.com/token',
+      new URLSearchParams({
+        code,
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        redirect_uri: GOOGLE_REDIRECT_URI,
+        grant_type: 'authorization_code'
+      }).toString(),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      }
+    );
+
+    const accessToken = tokenResponse.data.access_token;
+    if (!accessToken) {
+      return res.status(400).json({ error: 'Google did not return an access token' });
+    }
+
+    const googleProfileResponse = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+
+    const googleProfile = googleProfileResponse.data;
+    if (!googleProfile?.id || !googleProfile?.email) {
+      return res.status(400).json({ error: 'Unable to read your Google account details' });
+    }
+
+    let user = await User.findOne({
+      $or: [{ googleId: googleProfile.id }, { email: googleProfile.email.toLowerCase() }]
+    });
+
+    if (!user) {
+      const generatedUsername = await buildUniqueUsername(googleProfile.email, googleProfile.name);
+      const generatedPassword = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 12);
+
+      user = new User({
+        username: generatedUsername,
+        email: googleProfile.email.toLowerCase(),
+        password: generatedPassword,
+        googleId: googleProfile.id,
+        fullName: googleProfile.name || ''
+      });
+    } else if (!user.googleId) {
+      user.googleId = googleProfile.id;
+    }
+
+    if (!user.fullName && googleProfile.name) {
+      user.fullName = googleProfile.name;
+    }
+
+    await user.save();
+    res.json(createAuthResponse(user));
+  } catch (err) {
+    console.error('Google auth error:', err.response?.data || err.message);
+    res.status(500).json({ error: 'Google sign-in failed' });
+  }
+});
+
 // Login with rate limiting
 app.post('/login', authLimiter, async (req, res) => {
   try {
@@ -530,23 +785,7 @@ app.post('/login', authLimiter, async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ id: user._id, username: user.username, isAdmin: user.isAdmin }, JWT_SECRET);
-    res.json({
-      token,
-      blocked: !!user.isBlocked && !user.isAdmin,
-      restrictedToQueries: !!user.isBlocked && !user.isAdmin,
-      message: user.isBlocked && !user.isAdmin
-        ? 'Sorry you have been blocked from access. You can only send a query to the admin.'
-        : 'Login successful',
-      user: {
-        _id: user._id,
-        username: user.username,
-        email: user.email || '',
-        isAdmin: user.isAdmin,
-        isBlocked: !!user.isBlocked,
-        blockedReason: user.blockedReason || ''
-      }
-    });
+    res.json(createAuthResponse(user));
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ error: 'Login failed' });
