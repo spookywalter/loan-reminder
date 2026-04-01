@@ -447,7 +447,7 @@
 
     async function loadPayments() {
       try {
-        const response = await fetch('http://localhost:5000/admin/all-payments', {
+        const response = await fetch('/admin/all-payments', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -561,7 +561,7 @@
       if (!confirm('Approve this payment?')) return;
 
       try {
-        const response = await fetch(`http://localhost:5000/admin/payment/${paymentId}/approve`, {
+        const response = await fetch(`/admin/payment/${paymentId}/approve`, {
           method: 'PUT',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -584,7 +584,7 @@
       if (reason === null) return;
 
       try {
-        const response = await fetch(`http://localhost:5000/admin/payment/${paymentId}/reject`, {
+        const response = await fetch(`/admin/payment/${paymentId}/reject`, {
           method: 'PUT',
           headers: { 
             'Authorization': `Bearer ${token}`,

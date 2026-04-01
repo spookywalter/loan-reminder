@@ -552,7 +552,7 @@
 
     async function loadLoans() {
       try {
-        const response = await fetch('http://localhost:5000/loans', {
+        const response = await fetch('/loans', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();

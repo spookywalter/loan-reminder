@@ -923,7 +923,7 @@
     async function loadAdminData() {
       try {
         // Load stats
-        const statsRes = await fetch('http://localhost:5000/admin/stats', {
+        const statsRes = await fetch('/admin/stats', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -934,7 +934,7 @@
           document.getElementById('totalPayments').textContent = stats.stats.payments.toLocaleString();
           
           // Calculate revenue (example: sum of all payments)
-          const paymentsRes = await fetch('http://localhost:5000/admin/all-payments', {
+          const paymentsRes = await fetch('/admin/all-payments', {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           if (paymentsRes.ok) {
@@ -945,7 +945,7 @@
         }
 
         // Load recent users
-        const usersRes = await fetch('http://localhost:5000/admin/users', {
+        const usersRes = await fetch('/admin/users', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -955,7 +955,7 @@
         }
 
         // Load recent payments
-        const paymentsRes = await fetch('http://localhost:5000/admin/all-payments', {
+        const paymentsRes = await fetch('/admin/all-payments', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -1144,7 +1144,7 @@
     async function openUsersModal() {
       try {
         closeModal();
-        const response = await fetch('http://localhost:5000/admin/users', {
+        const response = await fetch('/admin/users', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -1226,7 +1226,7 @@
       if (!confirmPromote) return;
       
       try {
-        const response = await fetch(`http://localhost:5000/admin/promote-user/${userId}`, {
+        const response = await fetch(`/admin/promote-user/${userId}`, {
           method: 'PUT',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -1249,7 +1249,7 @@
       const reason = prompt(`Block ${username} from using the system.\n\nOptional reason shown to the user:`) || '';
 
       try {
-        const response = await fetch(`http://localhost:5000/admin/users/${userId}/block`, {
+        const response = await fetch(`/admin/users/${userId}/block`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -1277,7 +1277,7 @@
       if (!confirmUnblock) return;
 
       try {
-        const response = await fetch(`http://localhost:5000/admin/users/${userId}/unblock`, {
+        const response = await fetch(`/admin/users/${userId}/unblock`, {
           method: 'PUT',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -1301,7 +1301,7 @@
       if (!confirmDelete) return;
 
       try {
-        const response = await fetch(`http://localhost:5000/admin/users/${userId}`, {
+        const response = await fetch(`/admin/users/${userId}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -1377,7 +1377,7 @@
       messageEl.innerHTML = '<p style="color: var(--warning);">Creating admin account...</p>';
       
       try {
-        const response = await fetch('http://localhost:5000/admin/create', {
+        const response = await fetch('/admin/create', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, email, password, secretKey })
@@ -1411,7 +1411,7 @@
     // Open Payments Modal
     async function openPaymentsModal() {
       try {
-        const response = await fetch('http://localhost:5000/admin/all-payments', {
+        const response = await fetch('/admin/all-payments', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();

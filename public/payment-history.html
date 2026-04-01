@@ -339,7 +339,7 @@
       `;
 
       try {
-        const resp = await fetch('http://localhost:5000/payments', {
+        const resp = await fetch('/payments', {
           headers: {
             'Authorization': `Bearer ${token}`
           }

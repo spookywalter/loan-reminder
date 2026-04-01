@@ -912,7 +912,7 @@
   <script>
     // Ensure API_BASE_URL is defined
     if (typeof API_BASE_URL === 'undefined') {
-      window.API_BASE_URL = window.location.origin || 'http://localhost:5000';
+      window.API_BASE_URL = window.location.origin || '';
     }
 
     let token = localStorage.getItem('token');

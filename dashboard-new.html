@@ -1440,7 +1440,7 @@
 
     async function loadProfile() {
       try {
-        const response = await fetch('http://localhost:5000/profile', {
+        const response = await fetch('/profile', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -1472,7 +1472,7 @@
 
     async function fetchDashboardData() {
       try {
-        const response = await fetch('http://localhost:5000/loans', {
+        const response = await fetch('/loans', {
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
         });
         const data = await response.json();
@@ -1518,7 +1518,7 @@
       };
 
       try {
-        const response = await fetch('http://localhost:5000/profile', {
+        const response = await fetch('/profile', {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -1565,7 +1565,7 @@
       const priority = document.getElementById('supportPriority').value;
 
       try {
-        const response = await fetch('http://localhost:5000/queries', {
+        const response = await fetch('/queries', {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
           body: JSON.stringify({ category, subject, message, priority })
@@ -1585,7 +1585,7 @@
 
     async function loadMyQueries() {
       try {
-        const response = await fetch('http://localhost:5000/queries', {
+        const response = await fetch('/queries', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -1635,7 +1635,7 @@
 
     async function loadUserLoans() {
       try {
-        const response = await fetch('http://localhost:5000/loans', {
+        const response = await fetch('/loans', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -1753,7 +1753,7 @@
       messageEl.innerHTML = '<p style="color: var(--warning);">⏳ Processing payment...</p>';
       
       try {
-        const response = await fetch('http://localhost:5000/payments', {
+        const response = await fetch('/payments', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -1842,7 +1842,7 @@
 
     async function loadConversations() {
       try {
-        const response = await fetch('http://localhost:5000/api/messages/conversations', {
+        const response = await fetch('/api/messages/conversations', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -1874,7 +1874,7 @@
 
     async function loadSentMessages() {
       try {
-        const response = await fetch('http://localhost:5000/api/messages/sent', {
+        const response = await fetch('/api/messages/sent', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -1905,7 +1905,7 @@
       try {
         // For regular users, show admin as the only recipient option
         // For future: could allow messaging between users
-        const response = await fetch('http://localhost:5000/admin/messaging/users', {
+        const response = await fetch('/admin/messaging/users', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -1916,7 +1916,7 @@
         }
 
         // Also get admin users
-        const allUsersResponse = await fetch('http://localhost:5000/admin/users', {
+        const allUsersResponse = await fetch('/admin/users', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -1947,7 +1947,7 @@
       }
 
       try {
-        const response = await fetch('http://localhost:5000/api/messages', {
+        const response = await fetch('/api/messages', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -1988,7 +1988,7 @@
       document.getElementById('chatPartnerStatus').textContent = 'Conversation';
 
       // Mark messages as read
-      await fetch(`http://localhost:5000/api/messages/read-all/${partnerId}`, {
+      await fetch(`/api/messages/read-all/${partnerId}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -2008,7 +2008,7 @@
       if (!currentChatPartner) return;
 
       try {
-        const response = await fetch(`http://localhost:5000/api/messages/conversation/${currentChatPartner}`, {
+        const response = await fetch(`/api/messages/conversation/${currentChatPartner}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -2046,7 +2046,7 @@
       if (!body || !currentChatPartner) return;
 
       try {
-        const response = await fetch('http://localhost:5000/api/messages', {
+        const response = await fetch('/api/messages', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -2070,7 +2070,7 @@
 
     async function loadUnreadCount() {
       try {
-        const response = await fetch('http://localhost:5000/api/messages/unread-count', {
+        const response = await fetch('/api/messages/unread-count', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();

@@ -536,7 +536,7 @@
 
     async function loadQueries() {
       try {
-        const response = await fetch('http://localhost:5000/queries', {
+        const response = await fetch('/queries', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -703,7 +703,7 @@
       }
 
       try {
-        const response = await fetch(`http://localhost:5000/admin/queries/${selectedQueryId}`, {
+        const response = await fetch(`/admin/queries/${selectedQueryId}`, {
           method: 'PUT',
           headers: { 
             'Authorization': `Bearer ${token}`,
@@ -740,7 +740,7 @@
       }
 
       try {
-        const response = await fetch(`http://localhost:5000/admin/queries/${selectedQueryId}`, {
+        const response = await fetch(`/admin/queries/${selectedQueryId}`, {
           method: 'PUT',
           headers: { 
             'Authorization': `Bearer ${token}`,

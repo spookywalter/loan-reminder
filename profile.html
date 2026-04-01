@@ -469,7 +469,7 @@
 
     async function loadProfile() {
       try {
-        const response = await fetch('http://localhost:5000/profile', {
+        const response = await fetch('/profile', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -499,7 +499,7 @@
       };
 
       try {
-        const response = await fetch('http://localhost:5000/profile', {
+        const response = await fetch('/profile', {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,

@@ -466,7 +466,7 @@
     // Load user count on page load
     window.addEventListener('load', async () => {
       try {
-        const response = await fetch('http://localhost:5000/stats/public');
+        const response = await fetch('/stats/public');
         const data = await response.json();
         document.getElementById('userCount').innerHTML = `
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

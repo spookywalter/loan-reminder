@@ -20,8 +20,8 @@ const path = require('path');
 
 // M-Pesa Daraja API Configuration - PRODUCTION
 const MPESA_CONFIG = {
-  consumerKey: process.env.MPESA_CONSUMER_KEY || 'aJ1vnpKSNrAVGTvcBXL7UvD9z9cTbNJclovxj33WXroky9G7',
-  consumerSecret: process.env.MPESA_CONSUMER_SECRET || 'jZeKAn1OJCAue0N3ey1FqEVzY3lOvI957N9GIC0G8ibqA1CJqCIRVpZFbXp8liaG',
+  consumerKey: process.env.MPESA_CONSUMER_KEY || '',
+  consumerSecret: process.env.MPESA_CONSUMER_SECRET || '',
   shortCode: process.env.MPESA_SHORTCODE || 'your_production_shortcode_here',
   passkey: process.env.MPESA_PASSKEY || 'your_production_passkey_here',
   environment: process.env.MPESA_ENVIRONMENT || 'production',
@@ -70,13 +70,53 @@ const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://local
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || `${APP_URL.replace(/\/$/, '')}/google-callback.html`;
+const isProduction = process.env.NODE_ENV === 'production';
 
-// Security middleware - relaxed for development
+app.set('trust proxy', 1);
+
+// Enforce HTTPS in production behind reverse proxies (e.g., Vercel).
+app.use((req, res, next) => {
+  if (!isProduction) {
+    return next();
+  }
+
+  const forwardedProto = req.headers['x-forwarded-proto'];
+  const isSecure = req.secure || forwardedProto === 'https';
+
+  if (isSecure) {
+    return next();
+  }
+
+  const host = req.headers.host;
+  return res.redirect(301, `https://${host}${req.originalUrl}`);
+});
+
+// Security middleware
 app.use(helmet({
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://accounts.google.com', 'https://apis.google.com'],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
+      connectSrc: ["'self'", 'https:'],
+      frameSrc: ["'self'", 'https://accounts.google.com'],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'", 'https://accounts.google.com'],
+      frameAncestors: ["'none'"]
+    }
+  },
+  hsts: isProduction ? {
+    maxAge: 15552000,
+    includeSubDomains: true,
+    preload: true
+  } : false,
   crossOriginEmbedderPolicy: false,
-  crossOriginOpenerPolicy: false,
-  crossOriginResourcePolicy: false
+  crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' },
+  crossOriginResourcePolicy: { policy: 'same-origin' },
+  referrerPolicy: { policy: 'no-referrer' }
 }));
 app.use(morgan('dev'));
 

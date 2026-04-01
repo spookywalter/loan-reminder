@@ -439,7 +439,7 @@
     async function loadUserLoans() {
       try {
         console.log('Loading loans...');
-        const response = await fetch('http://localhost:5000/loans', {
+        const response = await fetch('/loans', {
           headers: { 
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -607,7 +607,7 @@
       );
 
       try {
-        const response = await fetch('http://localhost:5000/api/mpesa/stkpush', {
+        const response = await fetch('/api/mpesa/stkpush', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -676,7 +676,7 @@
       
       try {
         // Call admin approve endpoint to actually update balance
-        const response = await fetch(`http://localhost:5000/admin/payment/${selectedLoanId}/approve`, {
+        const response = await fetch(`/admin/payment/${selectedLoanId}/approve`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -717,7 +717,7 @@
       
       try {
         // Call admin reject endpoint
-        const response = await fetch(`http://localhost:5000/admin/payment/${selectedLoanId}/reject`, {
+        const response = await fetch(`/admin/payment/${selectedLoanId}/reject`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -755,7 +755,7 @@
       showMessage('⏳ Submitting payment for admin approval...', 'error');
 
       try {
-        const response = await fetch('http://localhost:5000/payments', {
+        const response = await fetch('/payments', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,

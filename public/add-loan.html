@@ -415,7 +415,7 @@
       submitText.textContent = 'Adding...';
 
       try {
-        const response = await fetch('http://localhost:5000/add-loan', {
+        const response = await fetch('/add-loan', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

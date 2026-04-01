@@ -602,7 +602,7 @@
       }
 
       try {
-        const response = await fetch('http://localhost:5000/queries', {
+        const response = await fetch('/queries', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -666,7 +666,7 @@
       }
 
       try {
-        const response = await fetch('http://localhost:5000/queries', {
+        const response = await fetch('/queries', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
