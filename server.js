@@ -70,8 +70,12 @@ const APP_URL = process.env.APP_URL || process.env.FRONTEND_URL || 'http://local
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || `${APP_URL.replace(/\/$/, '')}/google-callback.html`;
+const BOOTSTRAP_ADMIN_USERNAME = (process.env.BOOTSTRAP_ADMIN_USERNAME || '').trim().toLowerCase();
+const BOOTSTRAP_ADMIN_PASSWORD = process.env.BOOTSTRAP_ADMIN_PASSWORD || '';
+const BOOTSTRAP_ADMIN_EMAIL = (process.env.BOOTSTRAP_ADMIN_EMAIL || '').trim().toLowerCase();
 const isProduction = process.env.NODE_ENV === 'production';
 let missingEnvVars = [];
+let adminBootstrapPromise;
 
 if (isProduction) {
   if (!process.env.MONGO_URI && !process.env.MONGODB_URI) missingEnvVars.push('MONGO_URI or MONGODB_URI');
@@ -347,6 +351,7 @@ app.use(async (req, res, next) => {
 
   try {
     await ensureDatabaseConnection();
+    await ensureAdminBootstrap();
     next();
   } catch (err) {
     res.status(500).json({ error: 'Database connection failed' });
@@ -447,6 +452,55 @@ const messageSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 const Message = mongoose.model('Message', messageSchema);
+
+async function ensureAdminBootstrap() {
+  if (adminBootstrapPromise) {
+    return adminBootstrapPromise;
+  }
+
+  adminBootstrapPromise = (async () => {
+    if (!BOOTSTRAP_ADMIN_USERNAME || !BOOTSTRAP_ADMIN_PASSWORD) {
+      return;
+    }
+
+    if (BOOTSTRAP_ADMIN_PASSWORD.length < 6) {
+      console.warn('BOOTSTRAP_ADMIN_PASSWORD is too short. Admin bootstrap skipped.');
+      return;
+    }
+
+    try {
+      const searchConditions = [{ username: BOOTSTRAP_ADMIN_USERNAME }];
+      if (BOOTSTRAP_ADMIN_EMAIL) {
+        searchConditions.push({ email: BOOTSTRAP_ADMIN_EMAIL });
+      }
+
+      const existingUser = await User.findOne({ $or: searchConditions });
+
+      if (existingUser) {
+        if (!existingUser.isAdmin) {
+          existingUser.isAdmin = true;
+          await existingUser.save();
+          console.log(`Promoted bootstrap admin user: ${existingUser.username}`);
+        }
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(BOOTSTRAP_ADMIN_PASSWORD, 12);
+      await User.create({
+        username: BOOTSTRAP_ADMIN_USERNAME,
+        email: BOOTSTRAP_ADMIN_EMAIL || undefined,
+        password: hashedPassword,
+        isAdmin: true
+      });
+
+      console.log(`Bootstrap admin user created: ${BOOTSTRAP_ADMIN_USERNAME}`);
+    } catch (error) {
+      console.error('Admin bootstrap error:', error.message);
+    }
+  })();
+
+  return adminBootstrapPromise;
+}
 
 // AUTH MIDDLEWARE
 function isBlockedRouteAllowed(req) {
@@ -881,12 +935,19 @@ app.post('/auth/google/callback', authLimiter, async (req, res) => {
 // Login with rate limiting
 app.post('/login', authLimiter, async (req, res) => {
   try {
-    const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password required' });
+    const { username, email, password } = req.body;
+    const identifier = String(username || email || '').trim().toLowerCase();
+
+    if (!identifier || !password) {
+      return res.status(400).json({ error: 'Username/email and password required' });
     }
 
-    const user = await User.findOne({ username: username.toLowerCase() });
+    const user = await User.findOne({
+      $or: [
+        { username: identifier },
+        { email: identifier }
+      ]
+    });
 
     if (!user || !await bcrypt.compare(password, user.password)) {
       return res.status(401).json({ error: 'Invalid credentials' });

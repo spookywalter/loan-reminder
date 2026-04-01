@@ -297,6 +297,26 @@
       opacity: 0.9;
     }
 
+    .legal-links {
+      margin-top: 0.75rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
+    }
+
+    .legal-links a {
+      color: rgba(255, 255, 255, 0.95);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+      padding-bottom: 2px;
+    }
+
+    .legal-links a:hover {
+      border-bottom-color: rgba(255, 255, 255, 0.9);
+    }
+
     @media (max-width: 768px) {
       .landing-header {
         flex-direction: column;
@@ -439,18 +459,16 @@
     </section>
 
     <!-- About Section -->
-    <section class="about-section">
+    <section class="about-section" id="about">
       <h3>About Loan Reminder</h3>
       <p>
-        Loan Reminder is a comprehensive loan management platform designed to help individuals
-        manage their loans effectively. Whether you have personal loans, business loans, home
-        mortgages, or any other type of loan, our platform provides the tools you need to
-        stay on top of your financial obligations.
+        Loan Reminder is a personal finance web app built to help people track loans, monitor
+        due dates, and avoid missed payments. It is designed for borrowers who want one place
+        to manage repayment schedules and payment history.
       </p>
       <p>
-        With features like automatic payment reminders, detailed loan tracking, and easy
-        payment history management, Loan Reminder makes it simple to maintain control over
-        your financial health.
+        The app supports account security, loan tracking, payment records, support messaging,
+        and admin oversight to keep the platform reliable and useful for everyday loan management.
       </p>
     </section>
 
@@ -458,6 +476,11 @@
     <footer class="landing-footer">
       <p>&copy; 2026 Loan Reminder. All rights reserved.</p>
       <p class="business-email">support@loanreminder.com | +254 700 123 456</p>
+      <nav class="legal-links" aria-label="Legal and company links">
+        <a href="index.html#about">About</a>
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-of-service.html">Terms of Service</a>
+      </nav>
     </footer>
   </div>
 
