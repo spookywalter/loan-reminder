@@ -56,8 +56,8 @@ const PORT = process.env.PORT || 5000;
 const projectRoot = __dirname;
 const publicDirectory = path.join(projectRoot, 'public');
 const staticDirectory = fs.existsSync(publicDirectory) ? publicDirectory : projectRoot;
-const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
-const ADMIN_SECRET_KEY = process.env.ADMIN_SECRET_KEY || crypto.randomBytes(32).toString('hex');
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_jwt_secret_change_me_before_production';
+const ADMIN_SECRET_KEY = process.env.ADMIN_SECRET_KEY || 'dev_admin_secret_change_me_before_production';
 const allowedOrigins = new Set([
   'http://localhost:5500',
   'http://127.0.0.1:5500',
@@ -71,6 +71,18 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || `${APP_URL.replace(/\/$/, '')}/google-callback.html`;
 const isProduction = process.env.NODE_ENV === 'production';
+
+if (isProduction) {
+  const missingEnvVars = [];
+
+  if (!process.env.MONGO_URI && !process.env.MONGODB_URI) missingEnvVars.push('MONGO_URI or MONGODB_URI');
+  if (!process.env.JWT_SECRET) missingEnvVars.push('JWT_SECRET');
+  if (!process.env.ADMIN_SECRET_KEY) missingEnvVars.push('ADMIN_SECRET_KEY');
+
+  if (missingEnvVars.length > 0) {
+    throw new Error(`Missing required production env vars: ${missingEnvVars.join(', ')}`);
+  }
+}
 
 app.set('trust proxy', 1);
 
