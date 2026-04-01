@@ -71,20 +71,28 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || `${APP_URL.replace(/\/$/, '')}/google-callback.html`;
 const isProduction = process.env.NODE_ENV === 'production';
+let missingEnvVars = [];
 
 if (isProduction) {
-  const missingEnvVars = [];
-
   if (!process.env.MONGO_URI && !process.env.MONGODB_URI) missingEnvVars.push('MONGO_URI or MONGODB_URI');
   if (!process.env.JWT_SECRET) missingEnvVars.push('JWT_SECRET');
   if (!process.env.ADMIN_SECRET_KEY) missingEnvVars.push('ADMIN_SECRET_KEY');
 
   if (missingEnvVars.length > 0) {
-    throw new Error(`Missing required production env vars: ${missingEnvVars.join(', ')}`);
+    console.error(`Missing required production env vars: ${missingEnvVars.join(', ')}`);
   }
 }
 
 app.set('trust proxy', 1);
+
+function getClientIp(req) {
+  const forwardedFor = req.headers['x-forwarded-for'];
+  if (typeof forwardedFor === 'string' && forwardedFor.trim()) {
+    return forwardedFor.split(',')[0].trim();
+  }
+
+  return req.ip || req.socket?.remoteAddress || 'unknown';
+}
 
 // Enforce HTTPS in production behind reverse proxies (e.g., Vercel).
 app.use((req, res, next) => {
@@ -136,12 +144,14 @@ app.use(morgan('dev'));
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
+  keyGenerator: (req) => getClientIp(req),
   message: { error: 'Too many requests, please try again later' }
 });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 8, // limit auth attempts to 8 per window
+  keyGenerator: (req) => getClientIp(req),
   message: { error: 'Too many login attempts, please try again after 15 minutes' }
 });
 
@@ -328,6 +338,13 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use(async (req, res, next) => {
+  if (isProduction && missingEnvVars.length > 0) {
+    return res.status(500).json({
+      error: 'Server configuration error',
+      missingEnvVars
+    });
+  }
+
   try {
     await ensureDatabaseConnection();
     next();
